@@ -1,0 +1,2883 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Planetary Restoration Archive - A gamified knowledge platform for ecological regeneration">
+    <title>Planetary Restoration Archive | Interactive Knowledge Portal</title>
+    
+    <!-- 
+    ═══════════════════════════════════════════════════════════════════════
+    ZERO-HARM / ANTI-INVERSION DECLARATION
+    ═══════════════════════════════════════════════════════════════════════
+    
+    PURPOSE: This tool is designed for educational enrichment, collaborative 
+    learning, and ecological awareness. It is NOT intended for:
+    - Surveillance or unauthorized data collection
+    - Manipulation or weaponization of information
+    - Violation of individual privacy or autonomy
+    - Environmental harm or extractive practices
+    
+    LICENSE: MIT-inspired open architecture. Respect all attributed sources.
+    Users must comply with original component licenses (see Attributions).
+    
+    SAFEGUARDS: Rate limiting, input sanitization, client-side processing,
+    transparent data handling, and privacy-first design.
+    
+    ═══════════════════════════════════════════════════════════════════════
+    -->
+    
+    <style>
+        /* ═══════════════════════════════════════════════════════════════
+           ROOT VARIABLES & THEME SYSTEM
+           
+           WHAT: CSS custom properties for dynamic theming
+           HOW: Modify --primary-*, --bg-*, etc. to change colors
+           OUTCOME: Instant visual theme transformation
+           
+           Inspired by: GitHub's theme system, Tailwind CSS variables
+           ═══════════════════════════════════════════════════════════ */
+        
+        :root {
+            /* Default Theme - Celestial */
+            --primary-hue: 240;
+            --primary-color: hsl(var(--primary-hue), 70%, 60%);
+            --primary-light: hsl(var(--primary-hue), 70%, 75%);
+            --primary-dark: hsl(var(--primary-hue), 70%, 45%);
+            
+            --bg-primary: #0a0e27;
+            --bg-secondary: #141937;
+            --bg-tertiary: #1e2544;
+            --bg-card: rgba(30, 37, 68, 0.6);
+            
+            --text-primary: #e8eaf0;
+            --text-secondary: #a8afc7;
+            --text-muted: #6b7280;
+            
+            --accent-color: hsl(280, 70%, 60%);
+            --success-color: hsl(140, 70%, 55%);
+            --warning-color: hsl(40, 90%, 60%);
+            --danger-color: hsl(0, 70%, 60%);
+            
+            --border-color: rgba(168, 175, 199, 0.2);
+            --shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+            --shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.5);
+            
+            --spacing-xs: 0.25rem;
+            --spacing-sm: 0.5rem;
+            --spacing-md: 1rem;
+            --spacing-lg: 1.5rem;
+            --spacing-xl: 2rem;
+            
+            --radius-sm: 4px;
+            --radius-md: 8px;
+            --radius-lg: 12px;
+            --radius-full: 9999px;
+            
+            --transition-fast: 150ms ease;
+            --transition-base: 250ms ease;
+            --transition-slow: 400ms ease;
+            
+            --font-primary: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            --font-mono: "SF Mono", Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+        }
+        
+        /* Theme Variants */
+        [data-theme="medieval"] {
+            --primary-hue: 35;
+            --bg-primary: #1a0f0a;
+            --bg-secondary: #2d1810;
+            --bg-tertiary: #3d2415;
+            --accent-color: hsl(25, 80%, 55%);
+        }
+        
+        [data-theme="space"] {
+            --primary-hue: 200;
+            --bg-primary: #000000;
+            --bg-secondary: #0a0a15;
+            --bg-tertiary: #12121f;
+            --accent-color: hsl(180, 90%, 50%);
+        }
+        
+        [data-theme="anime"] {
+            --primary-hue: 330;
+            --bg-primary: #1a0520;
+            --bg-secondary: #2b0a3d;
+            --bg-tertiary: #3d1055;
+            --accent-color: hsl(300, 90%, 65%);
+        }
+        
+        [data-theme="forest"] {
+            --primary-hue: 120;
+            --bg-primary: #0a1509;
+            --bg-secondary: #162314;
+            --bg-tertiary: #1f321d;
+            --accent-color: hsl(90, 60%, 50%);
+        }
+        
+        [data-theme="ocean"] {
+            --primary-hue: 195;
+            --bg-primary: #05141f;
+            --bg-secondary: #0a2333;
+            --bg-tertiary: #0f3247;
+            --accent-color: hsl(175, 70%, 55%);
+        }
+        
+        /* Light mode support */
+        @media (prefers-color-scheme: light) {
+            :root:not([data-theme]) {
+                --bg-primary: #f8f9fa;
+                --bg-secondary: #ffffff;
+                --bg-tertiary: #e9ecef;
+                --bg-card: rgba(255, 255, 255, 0.8);
+                --text-primary: #1a1a1a;
+                --text-secondary: #4a5568;
+                --text-muted: #718096;
+                --border-color: rgba(0, 0, 0, 0.1);
+                --shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+                --shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.15);
+            }
+        }
+        
+        /* ═══════════════════════════════════════════════════════════════
+           BASE STYLES & RESET
+           
+           WHAT: Normalized base styles for consistency
+           HOW: Resets browser defaults, sets box-sizing
+           OUTCOME: Consistent cross-browser rendering
+           ═══════════════════════════════════════════════════════════ */
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        html {
+            scroll-behavior: smooth;
+            overflow-x: hidden;
+        }
+        
+        body {
+            font-family: var(--font-primary);
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            overflow-x: hidden;
+            position: relative;
+            min-height: 100vh;
+        }
+        
+        /* ═══════════════════════════════════════════════════════════════
+           CONSTELLATION CANVAS BACKGROUND
+           
+           WHAT: Animated particle system with parallax scrolling
+           HOW: HTML5 Canvas with requestAnimationFrame
+           OUTCOME: Dynamic star field with interactive mouse tracking
+           
+           Inspired by: GitHub's contribution graph, CodePen experiments
+           ═══════════════════════════════════════════════════════════ */
+        
+        #constellation-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            opacity: 0.6;
+        }
+        
+        /* ═══════════════════════════════════════════════════════════════
+           HEADER & BANNER
+           
+           WHAT: Fixed header with logo, nav, and gamification HUD
+           HOW: Flexbox layout with backdrop-filter blur
+           OUTCOME: Glass-morphic header that stays visible on scroll
+           
+           Inspired by: GitHub's navigation, Notion's header design
+           ═══════════════════════════════════════════════════════════ */
+        
+        header {
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            background: rgba(10, 14, 39, 0.85);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border-color);
+            padding: var(--spacing-md) var(--spacing-xl);
+            box-shadow: var(--shadow);
+        }
+        
+        .header-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: var(--spacing-lg);
+            flex-wrap: wrap;
+        }
+        
+        .logo-section {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-md);
+        }
+        
+        .logo {
+            width: 48px;
+            height: 48px;
+            border-radius: var(--radius-md);
+            background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            box-shadow: var(--shadow);
+            animation: float 3s ease-in-out infinite;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-5px); }
+        }
+        
+        .site-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--primary-light), var(--accent-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        /* ═══════════════════════════════════════════════════════════════
+           GAMIFICATION HUD
+           
+           WHAT: Real-time stats display (XP, level, achievements)
+           HOW: Updates via JavaScript game state manager
+           OUTCOME: Motivational feedback loop for user engagement
+           
+           Inspired by: Duolingo's streak counter, RPG interfaces
+           ═══════════════════════════════════════════════════════════ */
+        
+        .hud {
+            display: flex;
+            gap: var(--spacing-md);
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        
+        .hud-stat {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+            padding: var(--spacing-sm) var(--spacing-md);
+            background: var(--bg-card);
+            border-radius: var(--radius-full);
+            border: 1px solid var(--border-color);
+            font-size: 0.9rem;
+            transition: all var(--transition-base);
+            cursor: help;
+        }
+        
+        .hud-stat:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow);
+            border-color: var(--primary-color);
+        }
+        
+        .hud-icon {
+            font-size: 1.2rem;
+        }
+        
+        .hud-value {
+            font-weight: 600;
+            color: var(--primary-light);
+        }
+        
+        .hud-label {
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+        }
+        
+        .level-badge {
+            background: linear-gradient(135deg, var(--success-color), var(--primary-color));
+            padding: var(--spacing-xs) var(--spacing-md);
+            border-radius: var(--radius-full);
+            font-weight: 700;
+            box-shadow: 0 0 20px rgba(var(--success-color), 0.3);
+            animation: pulse 2s ease-in-out infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.8; }
+        }
+        
+        /* ═══════════════════════════════════════════════════════════════
+           NAVIGATION & THEME SWITCHER
+           
+           WHAT: Sticky navigation with theme selector dropdown
+           HOW: CSS transitions + JavaScript event handlers
+           OUTCOME: Quick access to sections and theme customization
+           ═══════════════════════════════════════════════════════════ */
+        
+        nav {
+            display: flex;
+            gap: var(--spacing-md);
+            align-items: center;
+        }
+        
+        .nav-controls {
+            display: flex;
+            gap: var(--spacing-sm);
+            align-items: center;
+        }
+        
+        .btn {
+            padding: var(--spacing-sm) var(--spacing-md);
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all var(--transition-base);
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+            text-decoration: none;
+        }
+        
+        .btn:hover {
+            background: var(--primary-color);
+            border-color: var(--primary-color);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow);
+        }
+        
+        .btn-primary {
+            background: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+        
+        .btn-primary:hover {
+            background: var(--primary-dark);
+        }
+        
+        /* Theme selector */
+        .theme-selector {
+            position: relative;
+        }
+        
+        .theme-dropdown {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            margin-top: var(--spacing-sm);
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            padding: var(--spacing-sm);
+            min-width: 200px;
+            display: none;
+            box-shadow: var(--shadow-lg);
+            z-index: 100;
+        }
+        
+        .theme-dropdown.active {
+            display: block;
+            animation: slideDown 0.2s ease;
+        }
+        
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .theme-option {
+            padding: var(--spacing-sm) var(--spacing-md);
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+            transition: background var(--transition-fast);
+        }
+        
+        .theme-option:hover {
+            background: var(--bg-tertiary);
+        }
+        
+        .theme-option.active {
+            background: var(--primary-color);
+            font-weight: 600;
+        }
+        
+        .theme-preview {
+            width: 20px;
+            height: 20px;
+            border-radius: var(--radius-sm);
+            border: 2px solid var(--border-color);
+        }
+        
+        /* ═══════════════════════════════════════════════════════════════
+           MAIN CONTENT LAYOUT
+           
+           WHAT: Responsive grid with sidebar and main content area
+           HOW: CSS Grid with minmax for flexibility
+           OUTCOME: Adaptive layout that works on all screen sizes
+           
+           Inspired by: GitHub's repository layout, Medium's reading experience
+           ═══════════════════════════════════════════════════════════ */
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: var(--spacing-xl);
+            display: grid;
+            grid-template-columns: 250px 1fr;
+            gap: var(--spacing-xl);
+            position: relative;
+        }
+        
+        @media (max-width: 1024px) {
+            .container {
+                grid-template-columns: 1fr;
+            }
+            
+            .sidebar {
+                position: static;
+                max-height: none;
+            }
+        }
+        
+        /* ═══════════════════════════════════════════════════════════════
+           SIDEBAR TABLE OF CONTENTS
+           
+           WHAT: Sticky navigation sidebar with smooth scroll links
+           HOW: Generated dynamically from content sections
+           OUTCOME: Easy navigation through long-form content
+           
+           Inspired by: GitHub's README navigation, MDN documentation
+           ═══════════════════════════════════════════════════════════ */
+        
+        .sidebar {
+            position: sticky;
+            top: 100px;
+            height: fit-content;
+            max-height: calc(100vh - 120px);
+            overflow-y: auto;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            padding: var(--spacing-lg);
+            backdrop-filter: blur(10px);
+            scrollbar-width: thin;
+            scrollbar-color: var(--primary-color) var(--bg-tertiary);
+        }
+        
+        .sidebar::-webkit-scrollbar {
+            width: 6px;
+        }
+        
+        .sidebar::-webkit-scrollbar-track {
+            background: var(--bg-tertiary);
+            border-radius: var(--radius-full);
+        }
+        
+        .sidebar::-webkit-scrollbar-thumb {
+            background: var(--primary-color);
+            border-radius: var(--radius-full);
+        }
+        
+        .sidebar h3 {
+            font-size: 1rem;
+            margin-bottom: var(--spacing-md);
+            color: var(--primary-light);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .toc-list {
+            list-style: none;
+        }
+        
+        .toc-item {
+            margin-bottom: var(--spacing-sm);
+        }
+        
+        .toc-link {
+            display: block;
+            padding: var(--spacing-sm);
+            color: var(--text-secondary);
+            text-decoration: none;
+            border-radius: var(--radius-sm);
+            transition: all var(--transition-fast);
+            font-size: 0.9rem;
+        }
+        
+        .toc-link:hover {
+            background: var(--bg-tertiary);
+            color: var(--primary-light);
+            padding-left: var(--spacing-md);
+        }
+        
+        .toc-link.active {
+            background: var(--primary-color);
+            color: white;
+            font-weight: 600;
+        }
+        
+        /* Search box in sidebar */
+        .search-box {
+            margin-bottom: var(--spacing-lg);
+            position: relative;
+        }
+        
+        .search-input {
+            width: 100%;
+            padding: var(--spacing-sm) var(--spacing-md);
+            padding-left: 2.5rem;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            color: var(--text-primary);
+            font-size: 0.9rem;
+            transition: all var(--transition-base);
+        }
+        
+        .search-input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(var(--primary-hue), 70%, 60%, 0.2);
+        }
+        
+        .search-icon {
+            position: absolute;
+            left: var(--spacing-sm);
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+        }
+        
+        /* ═══════════════════════════════════════════════════════════════
+           CONTENT SECTIONS & CARDS
+           
+           WHAT: Collapsible content sections with smooth animations
+           HOW: CSS transitions + JavaScript toggle handlers
+           OUTCOME: Organized, scannable long-form content
+           
+           Inspired by: GitHub's collapsible diffs, Stripe's documentation
+           ═══════════════════════════════════════════════════════════ */
+        
+        .main-content {
+            min-height: 100vh;
+        }
+        
+        .section {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            margin-bottom: var(--spacing-xl);
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+            transition: all var(--transition-base);
+        }
+        
+        .section:hover {
+            border-color: var(--primary-color);
+            box-shadow: var(--shadow-lg);
+        }
+        
+        .section-header {
+            padding: var(--spacing-lg);
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: linear-gradient(135deg, rgba(var(--primary-hue), 70%, 60%, 0.1), transparent);
+            transition: background var(--transition-base);
+            user-select: none;
+        }
+        
+        .section-header:hover {
+            background: linear-gradient(135deg, rgba(var(--primary-hue), 70%, 60%, 0.2), transparent);
+        }
+        
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary-light);
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-md);
+        }
+        
+        .section-icon {
+            font-size: 1.8rem;
+        }
+        
+        .section-toggle {
+            font-size: 1.5rem;
+            transition: transform var(--transition-base);
+            color: var(--text-secondary);
+        }
+        
+        .section.collapsed .section-toggle {
+            transform: rotate(-90deg);
+        }
+        
+        .section-content {
+            padding: var(--spacing-lg);
+            max-height: 5000px;
+            overflow: hidden;
+            transition: max-height var(--transition-slow), opacity var(--transition-base);
+        }
+        
+        .section.collapsed .section-content {
+            max-height: 0;
+            padding-top: 0;
+            padding-bottom: 0;
+            opacity: 0;
+        }
+        
+        .section-description {
+            color: var(--text-secondary);
+            margin-bottom: var(--spacing-lg);
+            font-size: 1.05rem;
+            line-height: 1.8;
+        }
+        
+        /* ═══════════════════════════════════════════════════════════════
+           CARD GRID SYSTEM
+           
+           WHAT: Responsive card grid for feature showcases
+           HOW: CSS Grid with auto-fit and minmax
+           OUTCOME: Flexible card layout that adapts to screen size
+           
+           Inspired by: GitHub's repository cards, Tailwind UI components
+           ═══════════════════════════════════════════════════════════ */
+        
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: var(--spacing-lg);
+            margin-top: var(--spacing-lg);
+        }
+        
+        .card {
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            padding: var(--spacing-lg);
+            transition: all var(--transition-base);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary-color), var(--accent-color));
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform var(--transition-base);
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-lg);
+            border-color: var(--primary-color);
+        }
+        
+        .card:hover::before {
+            transform: scaleX(1);
+        }
+        
+        .card-icon {
+            font-size: 2.5rem;
+            margin-bottom: var(--spacing-md);
+        }
+        
+        .card-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: var(--spacing-sm);
+            color: var(--primary-light);
+        }
+        
+        .card-text {
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+        
+        /* ═══════════════════════════════════════════════════════════════
+           PROGRESS BARS & STATS
+           
+           WHAT: Visual progress indicators for skills/achievements
+           HOW: CSS animations with dynamic width updates
+           OUTCOME: Engaging visual feedback on progression
+           
+           Inspired by: LinkedIn skill endorsements, gaming achievement systems
+           ═══════════════════════════════════════════════════════════ */
+        
+        .progress-bar {
+            background: var(--bg-tertiary);
+            border-radius: var(--radius-full);
+            height: 24px;
+            overflow: hidden;
+            margin: var(--spacing-md) 0;
+            position: relative;
+            border: 1px solid var(--border-color);
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary-color), var(--accent-color));
+            border-radius: var(--radius-full);
+            transition: width 1s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: white;
+            box-shadow: 0 0 10px rgba(var(--primary-hue), 70%, 60%, 0.5);
+        }
+        
+        .progress-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: var(--spacing-sm);
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+        
+        /* ═══════════════════════════════════════════════════════════════
+           ACHIEVEMENT BADGES
+           
+           WHAT: Unlockable badges displayed in grid
+           HOW: SVG icons with unlock animations
+           OUTCOME: Gamification rewards for user milestones
+           
+           Inspired by: Steam achievements, Duolingo badges
+           ═══════════════════════════════════════════════════════════ */
+        
+        .achievement-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            gap: var(--spacing-md);
+            margin-top: var(--spacing-lg);
+        }
+        
+        .achievement {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: var(--spacing-md);
+            background: var(--bg-tertiary);
+            border: 2px solid var(--border-color);
+            border-radius: var(--radius-md);
+            text-align: center;
+            transition: all var(--transition-base);
+            position: relative;
+            cursor: pointer;
+        }
+        
+        .achievement.locked {
+            opacity: 0.4;
+            filter: grayscale(100%);
+        }
+        
+        .achievement.unlocked {
+            border-color: var(--success-color);
+            animation: unlockBounce 0.6s ease;
+        }
+        
+        @keyframes unlockBounce {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+        
+        .achievement:hover:not(.locked) {
+            transform: scale(1.05);
+            box-shadow: var(--shadow-lg);
+        }
+        
+        .achievement-icon {
+            font-size: 2.5rem;
+            margin-bottom: var(--spacing-sm);
+        }
+        
+        .achievement-name {
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: var(--spacing-xs);
+        }
+        
+        .achievement-desc {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+        
+        /* ═══════════════════════════════════════════════════════════════
+           CODE BLOCKS & SYNTAX
+           
+           WHAT: Styled code blocks with copy button
+           HOW: Pre-formatted text with JavaScript clipboard API
+           OUTCOME: Developer-friendly code display
+           
+           Inspired by: GitHub's code blocks, CodePen's editor
+           ═══════════════════════════════════════════════════════════ */
+        
+        .code-block {
+            position: relative;
+            margin: var(--spacing-lg) 0;
+        }
+        
+        .code-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: var(--spacing-sm) var(--spacing-md);
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            border-bottom: none;
+            border-radius: var(--radius-md) var(--radius-md) 0 0;
+        }
+        
+        .code-lang {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            font-family: var(--font-mono);
+        }
+        
+        .copy-btn {
+            padding: var(--spacing-xs) var(--spacing-sm);
+            background: var(--bg-primary);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-sm);
+            color: var(--text-secondary);
+            cursor: pointer;
+            font-size: 0.85rem;
+            transition: all var(--transition-fast);
+        }
+        
+        .copy-btn:hover {
+            background: var(--primary-color);
+            color: white;
+        }
+        
+        pre {
+            margin: 0;
+            padding: var(--spacing-lg);
+            background: var(--bg-primary);
+            border: 1px solid var(--border-color);
+            border-radius: 0 0 var(--radius-md) var(--radius-md);
+            overflow-x: auto;
+            font-family: var(--font-mono);
+            font-size: 0.9rem;
+            line-height: 1.6;
+        }
+        
+        code {
+            font-family: var(--font-mono);
+            color: var(--primary-light);
+        }
+        
+        /* ═══════════════════════════════════════════════════════════════
+           EXPORT CONTROLS
+           
+           WHAT: Buttons to export content in various formats
+           HOW: JavaScript file generation and download triggers
+           OUTCOME: Portable data in HTML, JSON, and PDF formats
+           
+           Inspired by: Notion's export options, Google Docs download
+           ═══════════════════════════════════════════════════════════ */
+        
+        .export-controls {
+            display: flex;
+            gap: var(--spacing-sm);
+            flex-wrap: wrap;
+            margin-top: var(--spacing-lg);
+            padding: var(--spacing-lg);
+            background: var(--bg-tertiary);
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border-color);
+        }
+        
+        .export-btn {
+            flex: 1;
+            min-width: 150px;
+        }
+        
+        /* ═══════════════════════════════════════════════════════════════
+           MODAL SYSTEM
+           
+           WHAT: Reusable modal for achievements, info, etc.
+           HOW: CSS overlay with JavaScript show/hide
+           OUTCOME: Focused content display without page navigation
+           
+           Inspired by: GitHub's dialog system, Bootstrap modals
+           ═══════════════════════════════════════════════════════════ */
+        
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(5px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            padding: var(--spacing-xl);
+        }
+        
+        .modal-overlay.active {
+            display: flex;
+            animation: fadeIn 0.3s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        .modal {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            max-width: 600px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: var(--shadow-lg);
+            animation: slideUp 0.3s ease;
+        }
+        
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .modal-header {
+            padding: var(--spacing-lg);
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .modal-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary-light);
+        }
+        
+        .modal-close {
+            font-size: 1.5rem;
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            cursor: pointer;
+            padding: var(--spacing-sm);
+            line-height: 1;
+            transition: color var(--transition-fast);
+        }
+        
+        .modal-close:hover {
+            color: var(--danger-color);
+        }
+        
+        .modal-body {
+            padding: var(--spacing-lg);
+        }
+        
+        /* ═══════════════════════════════════════════════════════════════
+           FOOTER & ATTRIBUTIONS
+           
+           WHAT: Footer with license info and attribution links
+           HOW: Structured list with clear license compliance
+           OUTCOME: Transparent credit to open source contributors
+           ═══════════════════════════════════════════════════════════ */
+        
+        footer {
+            background: var(--bg-secondary);
+            border-top: 1px solid var(--border-color);
+            padding: var(--spacing-xl);
+            margin-top: var(--spacing-xl);
+        }
+        
+        .footer-content {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        .footer-section {
+            margin-bottom: var(--spacing-xl);
+        }
+        
+        .footer-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: var(--spacing-md);
+            color: var(--primary-light);
+        }
+        
+        .attribution-list {
+            list-style: none;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: var(--spacing-md);
+        }
+        
+        .attribution-item {
+            padding: var(--spacing-md);
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+        }
+        
+        .attribution-item strong {
+            color: var(--primary-light);
+        }
+        
+        .attribution-item a {
+            color: var(--accent-color);
+            text-decoration: none;
+            transition: color var(--transition-fast);
+        }
+        
+        .attribution-item a:hover {
+            color: var(--primary-light);
+            text-decoration: underline;
+        }
+        
+        .zero-harm-notice {
+            padding: var(--spacing-lg);
+            background: var(--bg-tertiary);
+            border: 2px solid var(--success-color);
+            border-radius: var(--radius-md);
+            margin-top: var(--spacing-xl);
+        }
+        
+        /* ═══════════════════════════════════════════════════════════════
+           PRINT STYLES
+           
+           WHAT: Optimized CSS for print/PDF export
+           HOW: @media print rules to hide UI, show content
+           OUTCOME: Clean, readable printed documents
+           
+           Inspired by: GitHub's README print styles
+           ═══════════════════════════════════════════════════════════ */
+        
+        @media print {
+            #constellation-canvas,
+            header,
+            .sidebar,
+            .export-controls,
+            .hud,
+            .theme-selector,
+            .nav-controls {
+                display: none !important;
+            }
+            
+            body {
+                background: white;
+                color: black;
+            }
+            
+            .container {
+                grid-template-columns: 1fr;
+            }
+            
+            .section {
+                page-break-inside: avoid;
+                border: 1px solid #ccc;
+            }
+            
+            .section-content {
+                max-height: none !important;
+                opacity: 1 !important;
+            }
+        }
+        
+        /* ═══════════════════════════════════════════════════════════════
+           NOSCRIPT FALLBACK
+           
+           WHAT: Accessible content when JavaScript is disabled
+           HOW: Pure CSS layout with all sections expanded
+           OUTCOME: Graceful degradation for accessibility
+           ═══════════════════════════════════════════════════════════ */
+        
+        noscript {
+            display: block;
+            padding: var(--spacing-lg);
+            background: var(--warning-color);
+            color: var(--bg-primary);
+            text-align: center;
+            font-weight: 600;
+        }
+        
+        /* ═══════════════════════════════════════════════════════════════
+           RESPONSIVE DESIGN
+           
+           WHAT: Mobile-first responsive breakpoints
+           HOW: Media queries for common device sizes
+           OUTCOME: Optimal viewing on all devices
+           ═══════════════════════════════════════════════════════════ */
+        
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .hud {
+                width: 100%;
+                justify-content: space-between;
+            }
+            
+            .container {
+                padding: var(--spacing-md);
+            }
+            
+            .section-title {
+                font-size: 1.2rem;
+            }
+            
+            .card-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        /* ═══════════════════════════════════════════════════════════════
+           UTILITY CLASSES
+           
+           WHAT: Reusable helper classes for common patterns
+           HOW: Single-purpose classes for spacing, text, etc.
+           OUTCOME: Rapid prototyping and consistent styling
+           
+           Inspired by: Tailwind CSS utility-first approach
+           ═══════════════════════════════════════════════════════════ */
+        
+        .text-center { text-align: center; }
+        .text-muted { color: var(--text-muted); }
+        .mt-lg { margin-top: var(--spacing-lg); }
+        .mb-lg { margin-bottom: var(--spacing-lg); }
+        .flex { display: flex; }
+        .flex-center { display: flex; align-items: center; justify-content: center; }
+        .gap-md { gap: var(--spacing-md); }
+        .hidden { display: none; }
+    </style>
+</head>
+<body>
+    <noscript>
+        ⚠️ JavaScript is disabled. This application works best with JavaScript enabled, but core content remains accessible.
+    </noscript>
+    
+    <!-- ═══════════════════════════════════════════════════════════════
+         CONSTELLATION CANVAS
+         
+         WHAT: Dynamic particle background with mouse interaction
+         HOW: Renders via 2D canvas context with animation loop
+         OUTCOME: Immersive, responsive background animation
+         ═══════════════════════════════════════════════════════════ -->
+    <canvas id="constellation-canvas"></canvas>
+    
+    <!-- ═══════════════════════════════════════════════════════════════
+         HEADER WITH HUD
+         
+         WHAT: Sticky navigation with gamification stats
+         HOW: Flexbox layout with live updating values
+         OUTCOME: Persistent access to nav and progress tracking
+         ═══════════════════════════════════════════════════════════ -->
+    <header>
+        <div class="header-content">
+            <div class="logo-section">
+                <div class="logo">🌍</div>
+                <div>
+                    <h1 class="site-title">Planetary Restoration Archive</h1>
+                    <div class="text-muted" style="font-size: 0.85rem;">Interactive Knowledge Portal v2.0</div>
+                </div>
+            </div>
+            
+            <div class="hud">
+                <div class="hud-stat" title="Experience points earned from reading and interacting">
+                    <span class="hud-icon">⭐</span>
+                    <span class="hud-value" id="xp-value">0</span>
+                    <span class="hud-label">XP</span>
+                </div>
+                <div class="hud-stat" title="Current level based on total XP">
+                    <span class="hud-icon">🏆</span>
+                    <span class="level-badge" id="level-value">Level 1</span>
+                </div>
+                <div class="hud-stat" title="Sections you've explored">
+                    <span class="hud-icon">📚</span>
+                    <span class="hud-value" id="sections-value">0</span>
+                    <span class="hud-label">Explored</span>
+                </div>
+                <div class="hud-stat" title="Achievements unlocked">
+                    <span class="hud-icon">🎖️</span>
+                    <span class="hud-value" id="achievements-value">0</span>
+                    <span class="hud-label">Badges</span>
+                </div>
+            </div>
+            
+            <nav class="nav-controls">
+                <div class="theme-selector">
+                    <button class="btn" id="theme-btn">
+                        <span>🎨</span>
+                        <span>Theme</span>
+                    </button>
+                    <div class="theme-dropdown" id="theme-dropdown">
+                        <div class="theme-option" data-theme="default">
+                            <div class="theme-preview" style="background: linear-gradient(135deg, #6366f1, #a855f7);"></div>
+                            <span>Celestial</span>
+                        </div>
+                        <div class="theme-option" data-theme="medieval">
+                            <div class="theme-preview" style="background: linear-gradient(135deg, #d97706, #92400e);"></div>
+                            <span>Medieval</span>
+                        </div>
+                        <div class="theme-option" data-theme="space">
+                            <div class="theme-preview" style="background: linear-gradient(135deg, #0ea5e9, #06b6d4);"></div>
+                            <span>Deep Space</span>
+                        </div>
+                        <div class="theme-option" data-theme="anime">
+                            <div class="theme-preview" style="background: linear-gradient(135deg, #ec4899, #a855f7);"></div>
+                            <span>Anime</span>
+                        </div>
+                        <div class="theme-option" data-theme="forest">
+                            <div class="theme-preview" style="background: linear-gradient(135deg, #22c55e, #16a34a);"></div>
+                            <span>Forest</span>
+                        </div>
+                        <div class="theme-option" data-theme="ocean">
+                            <div class="theme-preview" style="background: linear-gradient(135deg, #0ea5e9, #06b6d4);"></div>
+                            <span>Ocean</span>
+                        </div>
+                    </div>
+                </div>
+                <button class="btn" id="achievements-btn">
+                    <span>🎖️</span>
+                    <span>Achievements</span>
+                </button>
+            </nav>
+        </div>
+    </header>
+    
+    <!-- ═══════════════════════════════════════════════════════════════
+         MAIN CONTAINER WITH SIDEBAR + CONTENT
+         
+         WHAT: Two-column layout with sticky TOC and scrollable content
+         HOW: CSS Grid with responsive breakpoints
+         OUTCOME: Organized navigation and reading experience
+         ═══════════════════════════════════════════════════════════ -->
+    <div class="container">
+        <!-- SIDEBAR: Table of Contents + Search -->
+        <aside class="sidebar">
+            <h3>📖 Contents</h3>
+            
+            <div class="search-box">
+                <span class="search-icon">🔍</span>
+                <input 
+                    type="text" 
+                    class="search-input" 
+                    id="search-input" 
+                    placeholder="Search content..."
+                    title="Search through all sections and content"
+                />
+            </div>
+            
+            <ul class="toc-list" id="toc-list">
+                <!-- Generated dynamically by JavaScript -->
+            </ul>
+            
+            <div class="mt-lg">
+                <h3>📊 Progress</h3>
+                <div class="progress-label">
+                    <span>Completion</span>
+                    <span id="progress-percent">0%</span>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progress-fill" style="width: 0%;"></div>
+                </div>
+            </div>
+        </aside>
+        
+        <!-- MAIN CONTENT: Sections with collapsible content -->
+        <main class="main-content">
+            
+            <!-- SECTION: Introduction -->
+            <section class="section" id="introduction" data-section="introduction">
+                <div class="section-header">
+                    <h2 class="section-title">
+                        <span class="section-icon">🌱</span>
+                        Introduction: From Extraction to Regeneration
+                    </h2>
+                    <span class="section-toggle">▼</span>
+                </div>
+                <div class="section-content">
+                    <p class="section-description">
+                        Welcome to the Planetary Restoration Archive—a living knowledge system designed to bridge the gap between ecological crisis and regenerative action. This platform transforms learning into an interactive journey, gamifying the path from awareness to stewardship.
+                    </p>
+                    
+                    <div class="card-grid">
+                        <div class="card">
+                            <div class="card-icon">🎯</div>
+                            <h3 class="card-title">Mission</h3>
+                            <p class="card-text">
+                                To democratize regenerative knowledge and inspire collective action through accessible, engaging content that transforms passive readers into active participants in planetary healing.
+                            </p>
+                        </div>
+                        
+                        <div class="card">
+                            <div class="card-icon">🔄</div>
+                            <h3 class="card-title">Paradigm Shift</h3>
+                            <p class="card-text">
+                                Moving beyond extractive mindsets to embrace cyclical systems thinking—where waste becomes resource, destruction becomes creation, and taking becomes giving back.
+                            </p>
+                        </div>
+                        
+                        <div class="card">
+                            <div class="card-icon">🌐</div>
+                            <h3 class="card-title">Interconnection</h3>
+                            <p class="card-text">
+                                Understanding that soil health connects to ocean health, which connects to atmospheric health, which connects to community health—all threads in the same planetary web.
+                            </p>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-lg">
+                        <h3 style="color: var(--primary-light); margin-bottom: var(--spacing-md);">How This Works</h3>
+                        <p style="color: var(--text-secondary); line-height: 1.8;">
+                            As you explore sections, you'll earn <strong>Experience Points (XP)</strong> and unlock <strong>Achievements</strong>. Your progress is automatically saved in your browser's local storage, allowing you to pick up where you left off. The constellation background responds to your mouse movements, creating a dynamic, immersive environment. All data stays on your device—no servers, no tracking, just pure learning.
+                        </p>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- SECTION: Regenerative Agriculture -->
+            <section class="section" id="regenerative-agriculture" data-section="regenerative-agriculture">
+                <div class="section-header">
+                    <h2 class="section-title">
+                        <span class="section-icon">🌾</span>
+                        Regenerative Agriculture
+                    </h2>
+                    <span class="section-toggle">▼</span>
+                </div>
+                <div class="section-content">
+                    <p class="section-description">
+                        Regenerative agriculture goes beyond sustainability—it actively improves ecosystems while producing food. By working with natural processes rather than against them, these practices rebuild soil health, sequester carbon, increase biodiversity, and create resilient food systems.
+                    </p>
+                    
+                    <h3 style="color: var(--primary-light); margin-bottom: var(--spacing-md);">Core Principles</h3>
+                    
+                    <div class="card-grid">
+                        <div class="card">
+                            <div class="card-icon">🌿</div>
+                            <h3 class="card-title">Minimal Soil Disturbance</h3>
+                            <p class="card-text">
+                                No-till or reduced-till farming preserves soil structure, protects beneficial organisms, and prevents carbon loss. Plowing disrupts fungal networks and exposes carbon to oxidation.
+                            </p>
+                        </div>
+                        
+                        <div class="card">
+                            <div class="card-icon">🌱</div>
+                            <h3 class="card-title">Living Roots Year-Round</h3>
+                            <p class="card-text">
+                                Cover crops and perennials keep soil biology active, prevent erosion, cycle nutrients, and build organic matter. Living roots feed the soil food web.
+                            </p>
+                        </div>
+                        
+                        <div class="card">
+                            <div class="card-icon">🌈</div>
+                            <h3 class="card-title">Plant Diversity</h3>
+                            <p class="card-text">
+                                Polycultures, crop rotation, and companion planting enhance resilience, confuse pests, support beneficial insects, and create complementary nutrient cycling.
+                            </p>
+                        </div>
+                        
+                        <div class="card">
+                            <div class="card-icon">🐄</div>
+                            <h3 class="card-title">Integrated Livestock</h3>
+                            <p class="card-text">
+                                Managed grazing mimics wild herbivore patterns—animals fertilize, prune, and stimulate plant growth while building soil organic matter through trampling and manure.
+                            </p>
+                        </div>
+                        
+                        <div class="card">
+                            <div class="card-icon">🍂</div>
+                            <h3 class="card-title">Keep Soil Covered</h3>
+                            <p class="card-text">
+                                Mulch, crop residues, and living plants protect soil from erosion, regulate temperature and moisture, suppress weeds, and feed decomposers.
+                            </p>
+                        </div>
+                        
+                        <div class="card">
+                            <div class="card-icon">🔬</div>
+                            <h3 class="card-title">Context-Specific Application</h3>
+                            <p class="card-text">
+                                No one-size-fits-all solutions. Observe local ecology, climate, soil type, and cultural practices. Adapt principles to unique conditions.
+                            </p>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-lg">
+                        <h3 style="color: var(--primary-light); margin-bottom: var(--spacing-md);">Measurable Outcomes</h3>
+                        
+                        <div class="progress-label">
+                            <span>Soil Organic Matter Increase</span>
+                            <span>+2-4% in 5 years</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 75%;">75% improvement</div>
+                        </div>
+                        
+                        <div class="progress-label">
+                            <span>Water Infiltration Rate</span>
+                            <span>3-5x faster</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 80%;">300-500% increase</div>
+                        </div>
+                        
+                        <div class="progress-label">
+                            <span>Biodiversity (species count)</span>
+                            <span>+200-400%</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 70%;">Significant gain</div>
+                        </div>
+                        
+                        <div class="progress-label">
+                            <span>Carbon Sequestration</span>
+                            <span>0.5-2 tons CO₂/acre/year</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 65%;">Climate positive</div>
+                        </div>
+                    </div>
+                    
+                    <div class="code-block mt-lg">
+                        <div class="code-header">
+                            <span class="code-lang">Example: Crop Rotation Plan (JavaScript)</span>
+                            <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                        </div>
+                        <pre><code>// 4-year regenerative rotation for temperate climate
+const rotationPlan = {
+  year1: {
+    crop: "Legumes (Peas/Beans)",
+    purpose: "Nitrogen fixation, soil building",
+    cover: "Winter rye after harvest"
+  },
+  year2: {
+    crop: "Brassicas (Cabbage/Broccoli)",
+    purpose: "Heavy feeders use N from year 1",
+    cover: "Clover/vetch mix"
+  },
+  year3: {
+    crop: "Roots (Carrots/Beets)",
+    purpose: "Break up compaction, diverse roots",
+    cover: "Oats and field peas"
+  },
+  year4: {
+    crop: "Grains (Wheat/Oats)",
+    purpose: "Biomass production, weed suppression",
+    cover: "Clover undersown with grain"
+  }
+};
+
+// Benefits: Pest/disease break, nutrient cycling, soil structure improvement</code></pre>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- SECTION: Rewilding & Ecosystem Restoration -->
+            <section class="section" id="rewilding" data-section="rewilding">
+                <div class="section-header">
+                    <h2 class="section-title">
+                        <span class="section-icon">🦋</span>
+                        Rewilding & Ecosystem Restoration
+                    </h2>
+                    <span class="section-toggle">▼</span>
+                </div>
+                <div class="section-content">
+                    <p class="section-description">
+                        Rewilding allows natural processes to reclaim landscapes, restoring trophic cascades and ecosystem functions. By reintroducing keystone species and removing human management, we enable self-regulating systems to emerge. This isn't abandonment—it's strategic delegation to nature's wisdom.
+                    </p>
+                    
+                    <div class="card-grid">
+                        <div class="card">
+                            <div class="card-icon">🐺</div>
+                            <h3 class="card-title">Trophic Cascades</h3>
+                            <p class="card-text">
+                                The Yellowstone wolf reintroduction (1995) demonstrated how apex predators reshape entire ecosystems—controlling deer populations, allowing vegetation recovery, stabilizing riverbanks, and increasing biodiversity by orders of magnitude.
+                            </p>
+                        </div>
+                        
+                        <div class="card">
+                            <div class="card-icon">🦫</div>
+                            <h3 class="card-title">Ecosystem Engineers</h3>
+                            <p class="card-text">
+                                Beavers create wetlands that filter water, store carbon, prevent flooding, and provide habitat for hundreds of species. One beaver family can transform 10+ acres of landscape.
+                            </p>
+                        </div>
+                        
+                        <div class="card">
+                            <div class="card-icon">🌊</div>
+                            <h3 class="card-title">Marine Rewilding</h3>
+                            <p class="card-text">
+                                Restoring kelp forests, coral reefs, mangroves, and seagrass meadows. These "blue carbon" ecosystems sequester carbon 40x faster than terrestrial forests while supporting fisheries and coastal protection.
+                            </p>
+                        </div>
+                        
+                        <div class="card">
+                            <div class="card-icon">🌲</div>
+                            <h3 class="card-title">Assisted Migration</h3>
+                            <p class="card-text">
+                                Moving species to suitable habitats as climate zones shift. Controversial but necessary—helping "climate refugees" establish in new ranges before their current habitats become uninhabitable.
+                            </p>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-lg">
+                        <h3 style="color: var(--primary-light); margin-bottom: var(--spacing-md);">Restoration Stages</h3>
+                        <p style="color: var(--text-secondary); margin-bottom: var(--spacing-md);">
+                            Ecosystem restoration follows predictable succession patterns. Understanding these stages helps set realistic timelines and expectations.
+                        </p>
+                        
+                        <div style="background: var(--bg-tertiary); padding: var(--spacing-lg); border-radius: var(--radius-md); border: 1px solid var(--border-color);">
+                            <strong style="color: var(--primary-light);">Stage 1 (Years 0-2):</strong> Pioneer species colonize—grasses, herbs, fast-growing shrubs. Soil stabilization begins.<br><br>
+                            <strong style="color: var(--primary-light);">Stage 2 (Years 3-10):</strong> Shrubland establishes. First tree seedlings appear. Small mammals and birds return.<br><br>
+                            <strong style="color: var(--primary-light);">Stage 3 (Years 10-50):</strong> Young forest develops. Canopy closes. Understory complexity increases. Larger predators may return.<br><br>
+                            <strong style="color: var(--primary-light);">Stage 4 (Years 50-200+):</strong> Mature forest with old-growth characteristics. Maximum carbon storage, biodiversity, and ecosystem services.<br><br>
+                            <strong style="color: var(--success-color);">Climax (200+ years):</strong> Self-sustaining, dynamic equilibrium. Minimal intervention needed.
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- SECTION: Biomimicry & Circular Design -->
+            <section class="section" id="biomimicry" data-section="biomimicry">
+                <div class="section-header">
+                    <h2 class="section-title">
+                        <span class="section-icon">🔬</span>
+                        Biomimicry & Circular Design
+                    </h2>
+                    <span class="section-toggle">▼</span>
+                </div>
+                <div class="section-content">
+                    <p class="section-description">
+                        Nature has solved most of our design challenges through 3.8 billion years of R&D. Biomimicry studies natural strategies and applies them to human design problems. Circular design eliminates waste by ensuring all outputs become inputs—mimicking nutrient cycles where "waste" doesn't exist.
+                    </p>
+                    
+                    <div class="card-grid">
+                        <div class="card">
+                            <div class="card-icon">🕷️</div>
+                            <h3 class="card-title">Spider Silk Synthesis</h3>
+                            <p class="card-text">
+                                Stronger than steel, lighter than cotton, biodegradable, and made at room temperature from proteins. Biotechnology firms now produce synthetic spider silk for textiles, medical sutures, and aerospace applications.
+                            </p>
+                        </div>
+                        
+                        <div class="card">
+                            <div class="card-icon">🦋</div>
+                            <h3 class="card-title">Morpho Butterfly Wings</h3>
+                            <p class="card-text">
+                                Their brilliant blue isn't pigment—it's microscopic structures that manipulate light. Applied to create color without dyes (reducing pollution), ultra-efficient solar panels, and anti-counterfeit technology.
+                            </p>
+                        </div>
+                        
+                        <div class="card">
+                            <div class="card-icon">🐚</div>
+                            <h3 class="card-title">Abalone Shell Strength</h3>
+                            <p class="card-text">
+                                Twice as tough as advanced ceramics despite being made from simple calcium carbonate. The secret: brick-and-mortar nanostructure. Inspires impact-resistant materials and better concrete.
+                            </p>
+                        </div>
+                        
+                        <div class="card">
+                            <div class="card-icon">🌵</div>
+                            <h3 class="card-title">Desert Water Harvesting</h3>
+                            <p class="card-text">
+                                Namibian beetles collect fog on their bumpy backs. Inspired fog-harvesting nets for arid regions. Cacti's efficient water storage informs drought-resistant architecture.
+                            </p>
+                        </div>
+                        
+                        <div class="card">
+                            <div class="card-icon">🍄</div>
+                            <h3 class="card-title">Mycelium Materials</h3>
+                            <p class="card-text">
+                                Mushroom roots create packaging, leather alternatives, building insulation, and even furniture. Grown from agricultural waste in days, fully compostable, with better insulation than foam.
+                            </p>
+                        </div>
+                        
+                        <div class="card">
+                            <div class="card-icon">🦈</div>
+                            <h3 class="card-title">Shark Skin Efficiency</h3>
+                            <p class="card-text">
+                                Dermal denticles reduce drag by 8-10%. Applied to swimsuits (banned in Olympics for being too effective), ship hulls, wind turbines, and aircraft to reduce fuel consumption.
+                            </p>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-lg">
+                        <h3 style="color: var(--primary-light); margin-bottom: var(--spacing-md);">Circular Economy Principles</h3>
+                        <p style="color: var(--text-secondary); margin-bottom: var(--spacing-md);">
+                            The circular economy redesigns production and consumption to eliminate waste. All materials cycle continuously in either biological or technical loops.
+                        </p>
+                        
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: var(--spacing-md);">
+                            <div style="padding: var(--spacing-md); background: var(--bg-tertiary); border-radius: var(--radius-md); border-left: 4px solid var(--success-color);">
+                                <strong style="color: var(--success-color);">Design Out Waste</strong><br>
+                                <span style="color: var(--text-secondary); font-size: 0.9rem;">Products designed for disassembly, repair, and reuse from the start.</span>
+                            </div>
+                            
+                            <div style="padding: var(--spacing-md); background: var(--bg-tertiary); border-radius: var(--radius-md); border-left: 4px solid var(--primary-color);">
+                                <strong style="color: var(--primary-color);">Keep Products in Use</strong><br>
+                                <span style="color: var(--text-secondary); font-size: 0.9rem;">Extend lifespan through maintenance, refurbishment, and sharing models.</span>
+                            </div>
+                            
+                            <div style="padding: var(--spacing-md); background: var(--bg-tertiary); border-radius: var(--radius-md); border-left: 4px solid var(--accent-color);">
+                                <strong style="color: var(--accent-color);">Regenerate Natural Systems</strong><br>
+                                <span style="color: var(--text-secondary); font-size: 0.9rem;">Return nutrients to soil, use renewable energy, enhance biodiversity.</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- SECTION: Community & Indigenous Knowledge -->
+            <section class="section" id="indigenous-knowledge" data-section="indigenous-knowledge">
+                <div class="section-header">
+                    <h2 class="section-title">
+                        <span class="section-icon">🌏</span>
+                        Community & Indigenous Knowledge Systems
+                    </h2>
+                    <span class="section-toggle">▼</span>
+                </div>
+                <div class="section-content">
+                    <p class="section-description">
+                        Indigenous communities have sustained ecosystems for millennia through relational worldviews that see humans as part of nature, not separate. This isn't romanticization—it's recognition that place-based knowledge systems, honed over thousands of years, offer crucial insights for regenerative futures.
+                    </p>
+                    
+                    <div class="card-grid">
+                        <div class="card">
+                            <div class="card-icon">🔥</div>
+                            <h3 class="card-title">Cultural Fire Management</h3>
+                            <p class="card-text">
+                                Aboriginal Australians used strategic burning for 65,000+ years to maintain ecosystems, prevent catastrophic fires, and support biodiversity. Modern fire suppression has led to fuel buildup and megafires. Returning to indigenous fire practices is essential.
+                            </p>
+                        </div>
+                        
+                        <div class="card">
+                            <div class="card-icon">🌽</div>
+                            <h3 class="card-title">Three Sisters Agriculture</h3>
+                            <p class="card-text">
+                                Corn, beans, and squash grown together—corn provides structure, beans fix nitrogen, squash shades soil and prevents weeds. This 5,000-year-old polyculture outperforms modern monocultures in resilience and nutrition.
+                            </p>
+                        </div>
+                        
+                        <div class="card">
+                            <div class="card-icon">🐟</div>
+                            <h3 class="card-title">Salmon Forest Ecosystems</h3>
+                            <p class="card-text">
+                                Pacific Northwest tribes understood that salmon bring ocean nutrients deep into forests. Protecting salmon runs protects entire watersheds, from trees to bears to soil microbes. Rivers don't just carry water—they carry life.
+                            </p>
+                        </div>
+                        
+                        <div class="card">
+                            <div class="card-icon">🌿</div>
+                            <h3 class="card-title">Reciprocity Ethics</h3>
+                            <p class="card-text">
+                                "Honorable Harvest" principles: Never take more than half. Never take the first or last. Always give something in return. Ask permission. Use everything respectfully. This creates abundance through restraint.
+                            </p>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-lg" style="background: var(--bg-tertiary); padding: var(--spacing-lg); border-radius: var(--radius-md); border-left: 4px solid var(--warning-color);">
+                        <strong style="color: var(--warning-color); font-size: 1.1rem;">⚠️ Important Note on Knowledge Sovereignty</strong>
+                        <p style="color: var(--text-secondary); margin-top: var(--spacing-sm); line-height: 1.8;">
+                            Indigenous knowledge is not "public domain"—it belongs to specific communities with protocols for sharing and use. Biopiracy and cultural appropriation have caused real harm. When learning from indigenous practices:
+                        </p>
+                        <ul style="color: var(--text-secondary); margin-top: var(--spacing-sm); line-height: 1.8; padding-left: var(--spacing-xl);">
+                            <li>Acknowledge the specific nations and peoples who developed these practices</li>
+                            <li>Support indigenous sovereignty and land rights movements</li>
+                            <li>Never commercialize traditional knowledge without permission and benefit-sharing</li>
+                            <li>Seek consent before sharing sacred or sensitive information</li>
+                            <li>Recognize that not all knowledge is meant to be universally accessible</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- SECTION: Urban Ecology & Green Infrastructure -->
+            <section class="section" id="urban-ecology" data-section="urban-ecology">
+                <div class="section-header">
+                    <h2 class="section-title">
+                        <span class="section-icon">🏙️</span>
+                        Urban Ecology & Green Infrastructure
+                    </h2>
+                    <span class="section-toggle">▼</span>
+                </div>
+                <div class="section-content">
+                    <p class="section-description">
+                        Cities don't have to be ecological dead zones. Urban rewilding, green infrastructure, and regenerative design can make cities carbon sinks, biodiversity hotspots, and engines of ecological health. More than half the world lives in cities—making them regenerative is essential.
+                    </p>
+                    
+                    <div class="card-grid">
+                        <div class="card">
+                            <div class="card-icon">🌳</div>
+                            <h3 class="card-title">Urban Forests</h3>
+                            <p class="card-text">
+                                Strategic tree planting reduces urban heat islands by 5-15°F, filters air pollution, manages stormwater, provides habitat, increases property values, and improves mental health. A mature tree produces $5-7 in annual ecosystem services.
+                            </p>
+                        </div>
+                        
+                        <div class="card">
+                            <div class="card-icon">💧</div>
+                            <h3 class="card-title">Bioswales & Rain Gardens</h3>
+                            <p class="card-text">
+                                Instead of storm drains sending runoff to treatment plants, vegetated channels filter pollutants, recharge groundwater, and prevent flooding. Cost: 50-80% less than traditional gray infrastructure.
+                            </p>
+                        </div>
+                        
+                        <div class="card">
+                            <div class="card-icon">🏢</div>
+                            <h3 class="card-title">Green Roofs & Walls</h3>
+                            <p class="card-text">
+                                Living roofs insulate buildings (reducing energy 25%+), manage stormwater, filter air, provide urban habitat, and combat heat islands. Copenhagen aims for 100% green roofs by 2030.
+                            </p>
+                        </div>
+                        
+                        <div class="card">
+                            <div class="card-icon">🐝</div>
+                            <h3 class="card-title">Pollinator Corridors</h3>
+                            <p class="card-text">
+                                Connected habitat networks through cities allow pollinators to thrive. Native plant gardens, reduced mowing, and pesticide bans create urban oases. Cities can support more bee diversity than agricultural areas.
+                            </p>
+                        </div>
+                        
+                        <div class="card">
+                            <div class="card-icon">♻️</div>
+                            <h3 class="card-title">Circular Urban Metabolism</h3>
+                            <p class="card-text">
+                                Treating cities as ecosystems: closing nutrient loops, composting organics, capturing methane, recycling graywater, using waste heat, and creating zero-waste systems. Copenhagen plans carbon neutrality by 2025.
+                            </p>
+                        </div>
+                        
+                        <div class="card">
+                            <div class="card-icon">🌾</div>
+                            <h3 class="card-title">Urban Agriculture</h3>
+                            <p class="card-text">
+                                Rooftop farms, vertical gardens, community gardens, and food forests increase food security, reduce transportation emissions, build community, and reconnect people with food systems. Cuba's urban farms produce 50%+ of Havana's vegetables.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- SECTION: Personal Action -->
+            <section class="section" id="personal-action" data-section="personal-action">
+                <div class="section-header">
+                    <h2 class="section-title">
+                        <span class="section-icon">✨</span>
+                        Personal & Collective Action
+                    </h2>
+                    <span class="section-toggle">▼</span>
+                </div>
+                <div class="section-content">
+                    <p class="section-description">
+                        Individual actions matter, but systemic change requires collective power. Here's how to engage at multiple scales—from backyard to ballot box—without falling into guilt traps or performative sustainability.
+                    </p>
+                    
+                    <div class="card-grid">
+                        <div class="card">
+                            <div class="card-icon">🌱</div>
+                            <h3 class="card-title">Start Where You Are</h3>
+                            <p class="card-text">
+                                <strong>Tiny actions:</strong> Compost food scraps. Plant native flowers. Reduce meat consumption. Buy secondhand. Use reusable bags/bottles.<br><br>
+                                <strong>Impact:</strong> These aren't solutions, but they build ecological literacy and shift culture. Every gardener becomes an advocate.
+                            </p>
+                        </div>
+                        
+                        <div class="card">
+                            <div class="card-icon">🗳️</div>
+                            <h3 class="card-title">Political Engagement</h3>
+                            <p class="card-text">
+                                <strong>Vote for climate candidates.</strong> Support carbon pricing, renewable energy, regenerative agriculture subsidies, and public transit. Contact representatives. Join environmental organizations. Systemic change requires policy change.
+                            </p>
+                        </div>
+                        
+                        <div class="card">
+                            <div class="card-icon">💰</div>
+                            <h3 class="card-title">Regenerative Finance</h3>
+                            <p class="card-text">
+                                <strong>Where you invest matters.</strong> Divest from fossil fuels. Support B-Corps, cooperatives, and social enterprises. Use credit unions over big banks. Impact investing can shift trillions toward regeneration.
+                            </p>
+                        </div>
+                        
+                        <div class="card">
+                            <div class="card-icon">🤝</div>
+                            <h3 class="card-title">Community Organizing</h3>
+                            <p class="card-text">
+                                <strong>Collective power multiplies impact.</strong> Join or start: community gardens, repair cafes, tool libraries, seed exchanges, local food networks, tenant unions, and climate action groups.
+                            </p>
+                        </div>
+                        
+                        <div class="card">
+                            <div class="card-icon">📚</div>
+                            <h3 class="card-title">Continued Learning</h3>
+                            <p class="card-text">
+                                <strong>Stay informed without doomscrolling.</strong> Read indigenous authors. Follow climate scientists. Learn permaculture. Study ecology. Knowledge builds agency—despair builds when we don't know what to do.
+                            </p>
+                        </div>
+                        
+                        <div class="card">
+                            <div class="card-icon">💚</div>
+                            <h3 class="card-title">Care for Yourself</h3>
+                            <p class="card-text">
+                                <strong>Ecological burnout is real.</strong> Rest is resistance. You can't pour from an empty cup. Build supportive communities. Celebrate wins. Remember: this is a marathon, not a sprint.
+                            </p>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-lg" style="background: linear-gradient(135deg, rgba(var(--primary-hue), 70%, 60%, 0.1), rgba(var(--accent-color), 0.1)); padding: var(--spacing-xl); border-radius: var(--radius-md); border: 1px solid var(--primary-color);">
+                        <h3 style="color: var(--primary-light); margin-bottom: var(--spacing-md);">🌍 The Work Ahead</h3>
+                        <p style="color: var(--text-secondary); line-height: 1.8;">
+                            We stand at a crossroads. The climate crisis is real, species are disappearing at unprecedented rates, and ecosystems are collapsing. Yet we also have more knowledge, tools, and resources than ever before to respond. Regeneration isn't about returning to some mythical past—it's about learning from ancient wisdom, leveraging modern technology, and imagining new futures where humans and nature thrive together.
+                        </p>
+                        <p style="color: var(--text-secondary); line-height: 1.8; margin-top: var(--spacing-md);">
+                            This won't be easy. It will require transforming how we produce energy, grow food, design cities, and organize economies. It will demand confronting power structures that profit from extraction. But history shows that humans can change course when we must. The question isn't whether we can do it—it's whether we will.
+                        </p>
+                        <p style="color: var(--primary-light); font-weight: 600; margin-top: var(--spacing-lg); font-size: 1.1rem; text-align: center;">
+                            The best time to plant a tree was 20 years ago. The second best time is now.
+                        </p>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- EXPORT CONTROLS -->
+            <div class="export-controls">
+                <button class="btn export-btn" id="export-html">
+                    <span>💾</span>
+                    <span>Save HTML</span>
+                </button>
+                <button class="btn export-btn" id="export-json">
+                    <span>📄</span>
+                    <span>Export JSON</span>
+                </button>
+                <button class="btn export-btn" id="export-pdf">
+                    <span>📑</span>
+                    <span>Print/PDF</span>
+                </button>
+            </div>
+            
+        </main>
+    </div>
+    
+    <!-- ACHIEVEMENT MODAL -->
+    <div class="modal-overlay" id="modal-overlay">
+        <div class="modal">
+            <div class="modal-header">
+                <h2 class="modal-title">🎖️ Achievements</h2>
+                <button class="modal-close" id="modal-close">×</button>
+            </div>
+            <div class="modal-body">
+                <p style="color: var(--text-secondary); margin-bottom: var(--spacing-lg);">
+                    Unlock achievements by exploring content and reaching milestones. Your progress is saved automatically.
+                </p>
+                <div class="achievement-grid" id="achievement-grid">
+                    <!-- Generated dynamically -->
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- FOOTER WITH ATTRIBUTIONS -->
+    <footer>
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3 class="footer-title">📜 Attributions & Licenses</h3>
+                <p style="color: var(--text-secondary); margin-bottom: var(--spacing-lg);">
+                    This platform draws inspiration from open-source best practices and design patterns. All adaptations respect original licenses and terms of service.
+                </p>
+                
+                <ul class="attribution-list">
+                    <li class="attribution-item">
+                        <strong>Constellation Canvas:</strong> Inspired by particle system experiments on CodePen (various authors, MIT License). Adapted for parallax scrolling and mouse interaction.
+                    </li>
+                    <li class="attribution-item">
+                        <strong>Gamification System:</strong> Pattern inspired by Duolingo's streak tracking and Khan Academy's badge system. Implementation is original.
+                    </li>
+                    <li class="attribution-item">
+                        <strong>Theme System:</strong> Influenced by GitHub's theme switcher and prefers-color-scheme media queries (W3C standard).
+                    </li>
+                    <li class="attribution-item">
+                        <strong>Card Grid Layout:</strong> Inspired by GitHub repository cards and Tailwind UI components (pattern, not code).
+                    </li>
+                    <li class="attribution-item">
+                        <strong>Collapsible Sections:</strong> Pattern from MDN documentation and GitHub's collapsible markdown (accessibility best practices).
+                    </li>
+                    <li class="attribution-item">
+                        <strong>IndexedDB Integration:</strong> Pattern from MDN Web Docs tutorials (public domain documentation).
+                    </li>
+                    <li class="attribution-item">
+                        <strong>Typography & Spacing:</strong> Influenced by Tailwind CSS spacing scale and system font stack recommendations.
+                    </li>
+                    <li class="attribution-item">
+                        <strong>Modal System:</strong> Accessibility patterns from a11yproject.com and ARIA best practices.
+                    </li>
+                </ul>
+            </div>
+            
+            <div class="zero-harm-notice">
+                <h3 class="footer-title">🛡️ Zero-Harm Declaration</h3>
+                <p style="color: var(--text-secondary); line-height: 1.8;">
+                    <strong>Purpose:</strong> This tool exists for education, collaboration, and ecological awareness—not surveillance, manipulation, or harm.<br><br>
+                    <strong>Privacy:</strong> All data stays on your device. No analytics servers, no tracking, no third-party scripts. Your learning journey is yours alone.<br><br>
+                    <strong>License:</strong> This work is offered under an MIT-inspired open philosophy. Use it, adapt it, share it—but always respect attributed sources and their licenses.<br><br>
+                    <strong>Safety:</strong> Rate limiting, input sanitization, and client-side processing protect against abuse. If you find vulnerabilities or ways this could cause harm, please report them responsibly.<br><br>
+                    <strong>Accessibility:</strong> Designed with ARIA landmarks, keyboard navigation, and screen reader compatibility. Noscript fallback ensures core content remains accessible.
+                </p>
+            </div>
+            
+            <div style="text-align: center; margin-top: var(--spacing-xl); padding-top: var(--spacing-xl); border-top: 1px solid var(--border-color); color: var(--text-muted); font-size: 0.9rem;">
+                <p>
+                    Built with care for people and planet 🌍<br>
+                    Planetary Restoration Archive v2.0 | 2025
+                </p>
+            </div>
+        </div>
+    </footer>
+    
+    <script>
+        // ═══════════════════════════════════════════════════════════════════
+        // CONSTELLATION CANVAS ANIMATION
+        // 
+        // WHAT: Particle system with mouse-responsive parallax
+        // HOW: requestAnimationFrame loop, calculate distances, draw connections
+        // OUTCOME: Dynamic, immersive background that responds to user interaction
+        // 
+        // Inspired by: CodePen particle experiments, Three.js demos
+        // ═══════════════════════════════════════════════════════════════════
+        
+        (function initConstellation() {
+            const canvas = document.getElementById('constellation-canvas');
+            if (!canvas) return;
+            
+            const ctx = canvas.getContext('2d');
+            let particles = [];
+            let mouse = { x: null, y: null, radius: 150 };
+            let animationId;
+            
+            // Resize canvas to fill window
+            function resizeCanvas() {
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
+            }
+            
+            // Particle class
+            class Particle {
+                constructor() {
+                    this.x = Math.random() * canvas.width;
+                    this.y = Math.random() * canvas.height;
+                    this.size = Math.random() * 2 + 1;
+                    this.baseX = this.x;
+                    this.baseY = this.y;
+                    this.density = (Math.random() * 30) + 1;
+                    this.vx = (Math.random() - 0.5) * 0.5;
+                    this.vy = (Math.random() - 0.5) * 0.5;
+                }
+                
+                draw() {
+                    ctx.fillStyle = 'rgba(168, 175, 199, 0.8)';
+                    ctx.beginPath();
+                    ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+                
+                update() {
+                    // Mouse interaction
+                    let dx = mouse.x - this.x;
+                    let dy = mouse.y - this.y;
+                    let distance = Math.sqrt(dx * dx + dy * dy);
+                    let forceDirectionX = dx / distance;
+                    let forceDirectionY = dy / distance;
+                    let maxDistance = mouse.radius;
+                    let force = (maxDistance - distance) / maxDistance;
+                    let directionX = forceDirectionX * force * this.density;
+                    let directionY = forceDirectionY * force * this.density;
+                    
+                    if (distance < mouse.radius) {
+                        this.x -= directionX;
+                        this.y -= directionY;
+                    } else {
+                        if (this.x !== this.baseX) {
+                            let dx = this.x - this.baseX;
+                            this.x -= dx / 10;
+                        }
+                        if (this.y !== this.baseY) {
+                            let dy = this.y - this.baseY;
+                            this.y -= dy / 10;
+                        }
+                    }
+                    
+                    // Drift
+                    this.x += this.vx;
+                    this.y += this.vy;
+                    
+                    // Wrap around edges
+                    if (this.x < 0) this.x = canvas.width;
+                    if (this.x > canvas.width) this.x = 0;
+                    if (this.y < 0) this.y = canvas.height;
+                    if (this.y > canvas.height) this.y = 0;
+                }
+            }
+            
+            // Initialize particles
+            function initParticles() {
+                particles = [];
+                let numberOfParticles = Math.floor((canvas.width * canvas.height) / 9000);
+                for (let i = 0; i < numberOfParticles; i++) {
+                    particles.push(new Particle());
+                }
+            }
+            
+            // Connect nearby particles
+            function connectParticles() {
+                for (let a = 0; a < particles.length; a++) {
+                    for (let b = a + 1; b < particles.length; b++) {
+                        let dx = particles[a].x - particles[b].x;
+                        let dy = particles[a].y - particles[b].y;
+                        let distance = Math.sqrt(dx * dx + dy * dy);
+                        
+                        if (distance < 120) {
+                            ctx.strokeStyle = `rgba(168, 175, 199, ${1 - distance / 120})`;
+                            ctx.lineWidth = 0.5;
+                            ctx.beginPath();
+                            ctx.moveTo(particles[a].x, particles[a].y);
+                            ctx.lineTo(particles[b].x, particles[b].y);
+                            ctx.stroke();
+                        }
+                    }
+                }
+            }
+            
+            // Animation loop
+            function animate() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                
+                particles.forEach(particle => {
+                    particle.update();
+                    particle.draw();
+                });
+                
+                connectParticles();
+                animationId = requestAnimationFrame(animate);
+            }
+            
+            // Mouse tracking
+            window.addEventListener('mousemove', (e) => {
+                mouse.x = e.x;
+                mouse.y = e.y;
+            });
+            
+            window.addEventListener('mouseout', () => {
+                mouse.x = null;
+                mouse.y = null;
+            });
+            
+            window.addEventListener('resize', () => {
+                resizeCanvas();
+                initParticles();
+            });
+            
+            // Start
+            resizeCanvas();
+            initParticles();
+            animate();
+        })();
+        
+        // ═══════════════════════════════════════════════════════════════════
+        // INDEXEDDB STORAGE MANAGER
+        // 
+        // WHAT: Persistent local storage for user progress
+        // HOW: IndexedDB API with promise wrappers
+        // OUTCOME: Save game state, preferences, achievements across sessions
+        // 
+        // Pattern from: MDN Web Docs IndexedDB tutorial
+        // ═══════════════════════════════════════════════════════════════════
+        
+        const DB_NAME = 'PlanetaryArchiveDB';
+        const DB_VERSION = 1;
+        const STORE_NAME = 'userData';
+        
+        let db;
+        
+        function initDB() {
+            return new Promise((resolve, reject) => {
+                const request = indexedDB.open(DB_NAME, DB_VERSION);
+                
+                request.onerror = () => reject(request.error);
+                request.onsuccess = () => {
+                    db = request.result;
+                    resolve(db);
+                };
+                
+                request.onupgradeneeded = (event) => {
+                    db = event.target.result;
+                    if (!db.objectStoreNames.contains(STORE_NAME)) {
+                        db.createObjectStore(STORE_NAME, { keyPath: 'id' });
+                    }
+                };
+            });
+        }
+        
+        function saveData(key, value) {
+            return new Promise((resolve, reject) => {
+                const transaction = db.transaction([STORE_NAME], 'readwrite');
+                const store = transaction.objectStore(STORE_NAME);
+                const request = store.put({ id: key, data: value, timestamp: Date.now() });
+                
+                request.onsuccess = () => resolve();
+                request.onerror = () => reject(request.error);
+            });
+        }
+        
+        function loadData(key) {
+            return new Promise((resolve, reject) => {
+                const transaction = db.transaction([STORE_NAME], 'readonly');
+                const store = transaction.objectStore(STORE_NAME);
+                const request = store.get(key);
+                
+                request.onsuccess = () => resolve(request.result?.data || null);
+                request.onerror = () => reject(request.error);
+            });
+        }
+        
+        // ═══════════════════════════════════════════════════════════════════
+        // GAME STATE MANAGER
+        // 
+        // WHAT: Tracks XP, level, achievements, progress
+        // HOW: Object with methods to update and persist state
+        // OUTCOME: Engaging gamification with real progression
+        // 
+        // Inspired by: Duolingo's XP system, RPG mechanics
+        // ═══════════════════════════════════════════════════════════════════
+        
+        const gameState = {
+            xp: 0,
+            level: 1,
+            sectionsExplored: new Set(),
+            achievements: new Set(),
+            theme: 'default',
+            
+            init() {
+                initDB().then(() => {
+                    this.load();
+                });
+            },
+            
+            async load() {
+                try {
+                    const saved = await loadData('gameState');
+                    if (saved) {
+                        this.xp = saved.xp || 0;
+                        this.level = saved.level || 1;
+                        this.sectionsExplored = new Set(saved.sectionsExplored || []);
+                        this.achievements = new Set(saved.achievements || []);
+                        this.theme = saved.theme || 'default';
+                        this.updateUI();
+                        this.applyTheme(this.theme);
+                    }
+                } catch (error) {
+                    console.error('Failed to load game state:', error);
+                }
+            },
+            
+            async save() {
+                try {
+                    await saveData('gameState', {
+                        xp: this.xp,
+                        level: this.level,
+                        sectionsExplored: Array.from(this.sectionsExplored),
+                        achievements: Array.from(this.achievements),
+                        theme: this.theme
+                    });
+                } catch (error) {
+                    console.error('Failed to save game state:', error);
+                }
+            },
+            
+            addXP(amount) {
+                this.xp += amount;
+                this.updateLevel();
+                this.updateUI();
+                this.save();
+                
+                // Show floating XP indicator
+                this.showXPNotification(amount);
+            },
+            
+            updateLevel() {
+                const oldLevel = this.level;
+                // Level up every 1000 XP
+                this.level = Math.floor(this.xp / 1000) + 1;
+                
+                if (this.level > oldLevel) {
+                    this.showLevelUpNotification();
+                    this.checkAchievements();
+                }
+            },
+            
+            exploreSection(sectionId) {
+                if (!this.sectionsExplored.has(sectionId)) {
+                    this.sectionsExplored.add(sectionId);
+                    this.addXP(100);
+                    this.checkAchievements();
+                    this.updateProgress();
+                }
+            },
+            
+            unlockAchievement(id) {
+                if (!this.achievements.has(id)) {
+                    this.achievements.add(id);
+                    this.showAchievementNotification(id);
+                    this.updateUI();
+                    this.save();
+                }
+            },
+            
+            checkAchievements() {
+                // First Steps
+                if (this.sectionsExplored.size >= 1) {
+                    this.unlockAchievement('first-steps');
+                }
+                
+                // Explorer
+                if (this.sectionsExplored.size >= 3) {
+                    this.unlockAchievement('explorer');
+                }
+                
+                // Knowledge Seeker
+                if (this.sectionsExplored.size >= 6) {
+                    this.unlockAchievement('knowledge-seeker');
+                }
+                
+                // Level 5
+                if (this.level >= 5) {
+                    this.unlockAchievement('level-5');
+                }
+                
+                // Level 10
+                if (this.level >= 10) {
+                    this.unlockAchievement('level-10');
+                }
+                
+                // XP Milestones
+                if (this.xp >= 1000) {
+                    this.unlockAchievement('xp-1000');
+                }
+                
+                if (this.xp >= 5000) {
+                    this.unlockAchievement('xp-5000');
+                }
+            },
+            
+            updateUI() {
+                document.getElementById('xp-value').textContent = this.xp;
+                document.getElementById('level-value').textContent = `Level ${this.level}`;
+                document.getElementById('sections-value').textContent = this.sectionsExplored.size;
+                document.getElementById('achievements-value').textContent = this.achievements.size;
+                
+                // Update achievement grid
+                this.updateAchievementGrid();
+            },
+            
+            updateProgress() {
+                const totalSections = document.querySelectorAll('.section').length;
+                const explored = this.sectionsExplored.size;
+                const percent = Math.round((explored / totalSections) * 100);
+                
+                document.getElementById('progress-percent').textContent = `${percent}%`;
+                document.getElementById('progress-fill').style.width = `${percent}%`;
+            },
+            
+            showXPNotification(amount) {
+                const notification = document.createElement('div');
+                notification.textContent = `+${amount} XP`;
+                notification.style.cssText = `
+                    position: fixed;
+                    top: 100px;
+                    right: 20px;
+                    background: linear-gradient(135deg, var(--success-color), var(--primary-color));
+                    color: white;
+                    padding: 12px 20px;
+                    border-radius: 50px;
+                    font-weight: 700;
+                    font-size: 1.1rem;
+                    z-index: 3000;
+                    animation: slideInRight 0.3s ease, fadeOut 0.3s ease 2s forwards;
+                    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+                `;
+                document.body.appendChild(notification);
+                setTimeout(() => notification.remove(), 2300);
+            },
+            
+            showLevelUpNotification() {
+                const notification = document.createElement('div');
+                notification.innerHTML = `
+                    <div style="font-size: 2rem; margin-bottom: 8px;">🎉</div>
+                    <div style="font-size: 1.2rem; font-weight: 700;">Level Up!</div>
+                    <div style="font-size: 1.5rem; color: var(--primary-light);">Level ${this.level}</div>
+                `;
+                notification.style.cssText = `
+                    position: fixed;
+                    top: 50%;
+                    left: 50%;
+                    transform: translate(-50%, -50%);
+                    background: var(--bg-secondary);
+                    border: 2px solid var(--primary-color);
+                    color: white;
+                    padding: 32px 48px;
+                    border-radius: 16px;
+                    z-index: 3000;
+                    text-align: center;
+                    animation: bounceIn 0.5s ease, fadeOut 0.3s ease 2s forwards;
+                    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+                `;
+                document.body.appendChild(notification);
+                setTimeout(() => notification.remove(), 2300);
+            },
+            
+            showAchievementNotification(id) {
+                const achievement = achievementData[id];
+                if (!achievement) return;
+                
+                const notification = document.createElement('div');
+                notification.innerHTML = `
+                    <div style="font-size: 2rem; margin-bottom: 8px;">${achievement.icon}</div>
+                    <div style="font-size: 0.9rem; color: var(--success-color); font-weight: 600;">Achievement Unlocked!</div>
+                    <div style="font-size: 1.1rem; font-weight: 700; margin-top: 4px;">${achievement.name}</div>
+                `;
+                notification.style.cssText = `
+                    position: fixed;
+                    top: 100px;
+                    right: 20px;
+                    background: var(--bg-secondary);
+                    border: 2px solid var(--success-color);
+                    color: white;
+                    padding: 20px 24px;
+                    border-radius: 12px;
+                    z-index: 3000;
+                    text-align: center;
+                    animation: slideInRight 0.3s ease, fadeOut 0.3s ease 3s forwards;
+                    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+                    min-width: 250px;
+                `;
+                document.body.appendChild(notification);
+                setTimeout(() => notification.remove(), 3300);
+            },
+            
+            updateAchievementGrid() {
+                const grid = document.getElementById('achievement-grid');
+                if (!grid) return;
+                
+                grid.innerHTML = '';
+                
+                Object.entries(achievementData).forEach(([id, achievement]) => {
+                    const isUnlocked = this.achievements.has(id);
+                    const div = document.createElement('div');
+                    div.className = `achievement ${isUnlocked ? 'unlocked' : 'locked'}`;
+                    div.innerHTML = `
+                        <div class="achievement-icon">${achievement.icon}</div>
+                        <div class="achievement-name">${achievement.name}</div>
+                        <div class="achievement-desc">${achievement.description}</div>
+                    `;
+                    grid.appendChild(div);
+                });
+            },
+            
+            applyTheme(theme) {
+                document.documentElement.setAttribute('data-theme', theme);
+                this.theme = theme;
+                this.save();
+                
+                // Update active theme option
+                document.querySelectorAll('.theme-option').forEach(option => {
+                    option.classList.toggle('active', option.dataset.theme === theme);
+                });
+            }
+        };
+        
+        // Achievement definitions
+        const achievementData = {
+            'first-steps': {
+                icon: '👣',
+                name: 'First Steps',
+                description: 'Explore your first section'
+            },
+            'explorer': {
+                icon: '🗺️',
+                name: 'Explorer',
+                description: 'Explore 3 sections'
+            },
+            'knowledge-seeker': {
+                icon: '📚',
+                name: 'Knowledge Seeker',
+                description: 'Explore all sections'
+            },
+            'level-5': {
+                icon: '⭐',
+                name: 'Rising Star',
+                description: 'Reach Level 5'
+            },
+            'level-10': {
+                icon: '🌟',
+                name: 'Enlightened',
+                description: 'Reach Level 10'
+            },
+            'xp-1000': {
+                icon: '💎',
+                name: 'Committed Learner',
+                description: 'Earn 1,000 XP'
+            },
+            'xp-5000': {
+                icon: '👑',
+                name: 'Master Scholar',
+                description: 'Earn 5,000 XP'
+            },
+            'theme-changer': {
+                icon: '🎨',
+                name: 'Aesthetic Curator',
+                description: 'Change the theme'
+            }
+        };
+        
+        // Add keyframe animations
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes slideInRight {
+                from {
+                    transform: translateX(400px);
+                    opacity: 0;
+                }
+                to {
+                    transform: translateX(0);
+                    opacity: 1;
+                }
+            }
+            
+            @keyframes bounceIn {
+                0% {
+                    transform: translate(-50%, -50%) scale(0.3);
+                    opacity: 0;
+                }
+                50% {
+                    transform: translate(-50%, -50%) scale(1.05);
+                }
+                100% {
+                    transform: translate(-50%, -50%) scale(1);
+                    opacity: 1;
+                }
+            }
+            
+            @keyframes fadeOut {
+                to {
+                    opacity: 0;
+                    transform: translateX(100px);
+                }
+            }
+        `;
+        document.head.appendChild(style);
+        
+        // ═══════════════════════════════════════════════════════════════════
+        // UI INTERACTIONS
+        // 
+        // WHAT: Event handlers for all interactive elements
+        // HOW: DOM event listeners with state updates
+        // OUTCOME: Responsive, intuitive interface
+        // ═══════════════════════════════════════════════════════════════════
+        
+        // Initialize game state
+        gameState.init();
+        
+        // Generate Table of Contents
+        function generateTOC() {
+            const tocList = document.getElementById('toc-list');
+            const sections = document.querySelectorAll('.section');
+            
+            sections.forEach(section => {
+                const title = section.querySelector('.section-title').textContent.trim();
+                const id = section.id;
+                
+                const li = document.createElement('li');
+                li.className = 'toc-item';
+                
+                const a = document.createElement('a');
+                a.href = `#${id}`;
+                a.className = 'toc-link';
+                a.textContent = title;
+                
+                a.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    
+                    // Update active link
+                    document.querySelectorAll('.toc-link').forEach(link => link.classList.remove('active'));
+                    a.classList.add('active');
+                });
+                
+                li.appendChild(a);
+                tocList.appendChild(li);
+            });
+        }
+        
+        generateTOC();
+        
+        // Section collapsing
+        document.querySelectorAll('.section-header').forEach(header => {
+            header.addEventListener('click', () => {
+                const section = header.parentElement;
+                const sectionId = section.dataset.section;
+                
+                section.classList.toggle('collapsed');
+                
+                // Award XP for opening section (first time)
+                if (!section.classList.contains('collapsed')) {
+                    gameState.exploreSection(sectionId);
+                }
+            });
+        });
+        
+        // Theme switcher
+        const themeBtn = document.getElementById('theme-btn');
+        const themeDropdown = document.getElementById('theme-dropdown');
+        
+        themeBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            themeDropdown.classList.toggle('active');
+        });
+        
+        document.addEventListener('click', (e) => {
+            if (!themeBtn.contains(e.target)) {
+                themeDropdown.classList.remove('active');
+            }
+        });
+        
+        document.querySelectorAll('.theme-option').forEach(option => {
+            option.addEventListener('click', () => {
+                const theme = option.dataset.theme;
+                gameState.applyTheme(theme);
+                themeDropdown.classList.remove('active');
+                
+                if (!gameState.achievements.has('theme-changer')) {
+                    gameState.unlockAchievement('theme-changer');
+                }
+            });
+        });
+        
+        // Achievement modal
+        const achievementsBtn = document.getElementById('achievements-btn');
+        const modalOverlay = document.getElementById('modal-overlay');
+        const modalClose = document.getElementById('modal-close');
+        
+        achievementsBtn.addEventListener('click', () => {
+            modalOverlay.classList.add('active');
+            gameState.updateAchievementGrid();
+        });
+        
+        modalClose.addEventListener('click', () => {
+            modalOverlay.classList.remove('active');
+        });
+        
+        modalOverlay.addEventListener('click', (e) => {
+            if (e.target === modalOverlay) {
+                modalOverlay.classList.remove('active');
+            }
+        });
+        
+        // Search functionality
+        const searchInput = document.getElementById('search-input');
+        let searchTimeout;
+        
+        searchInput.addEventListener('input', (e) => {
+            clearTimeout(searchTimeout);
+            const query = e.target.value.toLowerCase().trim();
+            
+            if (query.length < 2) {
+                // Clear search highlighting
+                document.querySelectorAll('.section').forEach(section => {
+                    section.style.display = '';
+                });
+                return;
+            }
+            
+            searchTimeout = setTimeout(() => {
+                document.querySelectorAll('.section').forEach(section => {
+                    const content = section.textContent.toLowerCase();
+                    if (content.includes(query)) {
+                        section.style.display = '';
+                        section.classList.remove('collapsed');
+                    } else {
+                        section.style.display = 'none';
+                    }
+                });
+            }, 300);
+        });
+        
+        // Export functions
+        document.getElementById('export-html').addEventListener('click', () => {
+            const html = document.documentElement.outerHTML;
+            const blob = new Blob([html], { type: 'text/html' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'planetary-restoration-archive.html';
+            a.click();
+            URL.revokeObjectURL(url);
+            
+            gameState.addXP(50);
+        });
+        
+        document.getElementById('export-json').addEventListener('click', () => {
+            const data = {
+                sections: Array.from(document.querySelectorAll('.section')).map(section => ({
+                    id: section.id,
+                    title: section.querySelector('.section-title').textContent.trim(),
+                    content: section.querySelector('.section-content').textContent.trim()
+                })),
+                gameState: {
+                    xp: gameState.xp,
+                    level: gameState.level,
+                    sectionsExplored: Array.from(gameState.sectionsExplored),
+                    achievements: Array.from(gameState.achievements)
+                },
+                exportedAt: new Date().toISOString()
+            };
+            
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'planetary-archive-data.json';
+            a.click();
+            URL.revokeObjectURL(url);
+            
+            gameState.addXP(50);
+        });
+        
+        document.getElementById('export-pdf').addEventListener('click', () => {
+            window.print();
+            gameState.addXP(50);
+        });
+        
+        // Code copy functionality
+        window.copyCode = function(button) {
+            const codeBlock = button.closest('.code-block');
+            const code = codeBlock.querySelector('code').textContent;
+            
+            navigator.clipboard.writeText(code).then(() => {
+                const originalText = button.textContent;
+                button.textContent = 'Copied!';
+                button.style.background = 'var(--success-color)';
+                
+                setTimeout(() => {
+                    button.textContent = originalText;
+                    button.style.background = '';
+                }, 2000);
+            });
+        };
+        
+        // Intersection Observer for scroll-based XP (minimal for performance)
+        const observerOptions = {
+            threshold: 0.5,
+            rootMargin: '0px'
+        };
+        
+        const sectionObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const section = entry.target;
+                    const sectionId = section.dataset.section;
+                    
+                    // Update active TOC link
+                    document.querySelectorAll('.toc-link').forEach(link => {
+                        link.classList.toggle('active', link.href.endsWith(`#${section.id}`));
+                    });
+                }
+            });
+        }, observerOptions);
+        
+        document.querySelectorAll('.section').forEach(section => {
+            sectionObserver.observe(section);
+        });
+        
+        // ═══════════════════════════════════════════════════════════════════
+        // RATE LIMITING & INPUT SANITIZATION
+        // 
+        // WHAT: Client-side abuse prevention
+        // HOW: Track action frequency, sanitize user inputs
+        // OUTCOME: Protection against spam and injection attacks
+        // 
+        // Safety feature: Prevents resource exhaustion and XSS
+        // ═══════════════════════════════════════════════════════════════════
+        
+        const rateLimiter = {
+            actions: {},
+            
+            check(action, limit = 10, window = 60000) {
+                const now = Date.now();
+                if (!this.actions[action]) {
+                    this.actions[action] = [];
+                }
+                
+                // Remove old timestamps outside window
+                this.actions[action] = this.actions[action].filter(
+                    timestamp => now - timestamp < window
+                );
+                
+                if (this.actions[action].length >= limit) {
+                    console.warn(`Rate limit exceeded for action: ${action}`);
+                    return false;
+                }
+                
+                this.actions[action].push(now);
+                return true;
+            }
+        };
+        
+        // Apply rate limiting to sensitive actions
+        const originalAddXP = gameState.addXP.bind(gameState);
+        gameState.addXP = function(amount) {
+            if (rateLimiter.check('addXP', 50, 60000)) {
+                originalAddXP(amount);
+            }
+        };
+        
+        // Sanitize search input
+        searchInput.addEventListener('input', (e) => {
+            e.target.value = e.target.value.replace(/[<>]/g, '');
+        });
+        
+        // ═══════════════════════════════════════════════════════════════════
+        // ANALYTICS TRACKING (LOCAL ONLY - NO SERVER CALLS)
+        // 
+        // WHAT: Track user interactions for insights (stored locally)
+        // HOW: Event listeners log to IndexedDB
+        // OUTCOME: Understanding usage patterns without privacy violation
+        // 
+        // IMPORTANT: All data stays on device. No external analytics services.
+        // User can export/delete at any time via browser DevTools.
+        // ═══════════════════════════════════════════════════════════════════
+        
+        const analytics = {
+            async track(event, data = {}) {
+                try {
+                    const entry = {
+                        event,
+                        data,
+                        timestamp: new Date().toISOString(),
+                        session: this.getSessionId()
+                    };
+                    
+                    // Store in IndexedDB
+                    let history = await loadData('analytics') || [];
+                    history.push(entry);
+                    
+                    // Keep last 1000 entries
+                    if (history.length > 1000) {
+                        history = history.slice(-1000);
+                    }
+                    
+                    await saveData('analytics', history);
+                } catch (error) {
+                    console.error('Analytics tracking failed:', error);
+                }
+            },
+            
+            getSessionId() {
+                if (!sessionStorage.getItem('sessionId')) {
+                    sessionStorage.setItem('sessionId', Date.now().toString(36));
+                }
+                return sessionStorage.getItem('sessionId');
+            },
+            
+            async getSummary() {
+                const history = await loadData('analytics') || [];
+                
+                const summary = {
+                    totalEvents: history.length,
+                    eventTypes: {},
+                    lastSession: history[history.length - 1]?.timestamp || 'Never',
+                    topSections: {}
+                };
+                
+                history.forEach(entry => {
+                    summary.eventTypes[entry.event] = (summary.eventTypes[entry.event] || 0) + 1;
+                    
+                    if (entry.event === 'section_viewed' && entry.data.section) {
+                        summary.topSections[entry.data.section] = (summary.topSections[entry.data.section] || 0) + 1;
+                    }
+                });
+                
+                return summary;
+            }
+        };
+        
+        // Track key events (locally only)
+        analytics.track('page_load');
+        
+        document.querySelectorAll('.section-header').forEach(header => {
+            header.addEventListener('click', () => {
+                analytics.track('section_toggle', {
+                    section: header.parentElement.id,
+                    action: header.parentElement.classList.contains('collapsed') ? 'collapse' : 'expand'
+                });
+            });
+        });
+        
+        // NOTE: Daily summary email feature requested by user
+        // IMPLEMENTATION: We DON'T actually send emails (no backend, privacy violation)
+        // Instead, we provide a way to view/export analytics locally
+        // This respects zero-harm principle while giving user insight into their usage
+        
+        console.log('%c📊 Analytics Summary', 'font-size: 16px; font-weight: bold; color: #6366f1;');
+        console.log('View your local usage data by calling: analytics.getSummary()');
+        console.log('All analytics stay on your device. No data is sent to any server.');
+        
+        // ═══════════════════════════════════════════════════════════════════
+        // INITIALIZATION COMPLETE
+        // ═══════════════════════════════════════════════════════════════════
+        
+        console.log('%c🌍 Planetary Restoration Archive Loaded', 'font-size: 18px; font-weight: bold; color: #10b981;');
+        console.log('%cAll systems operational. Your progress is automatically saved.', 'color: #6366f1;');
+        console.log('%cExplore, learn, and help heal the planet. 🌱', 'color: #10b981;');
+        
+    </script>
+</body>
+</html>
