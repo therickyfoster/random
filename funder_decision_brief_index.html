@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Funder Decision Brief · Planetary Restoration Archive</title>
+<style>
+  :root{
+    --bg:#05070c;
+    --ink:#e6f1ff;
+    --muted:#a7b6c9;
+    --accent:#88e0ff;
+    --glow:#5ef1a1;
+    --warn:#ffcc66;
+    --danger:#ff6b6b;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;height:100%;background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,Noto Sans,sans-serif;line-height:1.6}
+  a{color:var(--accent)}
+  .hide{display:none}
+  /* Layers */
+  #space-wrap{position:fixed;inset:0;overflow:hidden;z-index:-3}
+  canvas.layer{position:absolute;inset:0;width:100%;height:100%}
+  #parallax-1{z-index:-3}
+  #parallax-2{z-index:-2}
+  #parallax-3{z-index:-1}
+
+  /* Animated title */
+  header.hero{
+    position:relative;
+    min-height:88vh;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    text-align:center;
+    padding:8vh 6vw;
+  }
+  .title{
+    font-size: clamp(32px, 6vw, 72px);
+    letter-spacing:0.03em;
+    font-weight:800;
+    text-transform:uppercase;
+    background: radial-gradient(120% 200% at 50% 0%, #d9ffff 0%, #9ce0ff 25%, #76e0c1 50%, #0af 75%, #111 100%);
+    -webkit-background-clip:text;
+    background-clip:text;
+    color:transparent;
+    filter: drop-shadow(0 0 18px rgba(120,240,255,.25));
+    animation:titlePulse 6s ease-in-out infinite;
+  }
+  @keyframes titlePulse {
+    0%,100%{letter-spacing:0.03em;filter: drop-shadow(0 0 12px rgba(120,240,255,.25))}
+    50%{letter-spacing:0.08em;filter: drop-shadow(0 0 28px rgba(120,240,255,.55))}
+  }
+  .subtitle{
+    color:var(--muted);
+    max-width:900px;
+    margin:1rem auto 0;
+    font-size:clamp(16px,2.4vw,20px);
+  }
+  .cta-row{margin-top:2rem;display:flex;gap:.8rem;flex-wrap:wrap;justify-content:center}
+  .btn{
+    appearance:none;border:1px solid rgba(255,255,255,.12);
+    background:rgba(255,255,255,.04);
+    color:var(--ink);
+    padding:.75rem 1rem;border-radius:12px;cursor:pointer;
+    transition:.25s transform,.25s box-shadow,.25s background;
+    backdrop-filter:saturate(1.4) blur(2px);
+  }
+  .btn:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,.4);background:rgba(255,255,255,.08)}
+  .btn.glow{border-color:rgba(94,241,161,.6);box-shadow:0 0 0 0 rgba(94,241,161,.35);animation:breath 3.5s ease-in-out infinite}
+  @keyframes breath {
+    0%,100%{box-shadow:0 0 0 0 rgba(94,241,161,.35)}
+    50%{box-shadow:0 0 24px 10px rgba(94,241,161,.22)}
+  }
+
+  /* Sections */
+  section{padding:8vh 6vw;max-width:1100px;margin:0 auto}
+  h2{margin:0 0 1rem;font-size:clamp(24px,4.2vw,40px)}
+  p{opacity:.96}
+  .muted{color:var(--muted)}
+  .card{
+    border:1px solid rgba(255,255,255,.12);
+    background:linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.02));
+    padding:1rem;border-radius:14px;margin:1rem 0;
+    box-shadow: 0 10px 40px rgba(0,0,0,.32);
+  }
+  details.card summary{
+    list-style:none;cursor:pointer;font-weight:700;font-size:1.1rem;
+    display:flex;align-items:center;gap:.6rem
+  }
+  details.card summary::-webkit-details-marker{display:none}
+  .chip{display:inline-block;padding:.25rem .55rem;border-radius:999px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);font-size:.8rem;color:var(--muted)}
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:1rem}
+
+  /* Sticky TOC */
+  .toc{position:sticky;top:10px;align-self:start}
+  .toc a{display:block;margin:.25rem 0;color:var(--muted);text-decoration:none}
+  .toc a:hover{color:var(--ink)}
+
+  /* Footer */
+  footer{padding:10vh 6vw;color:var(--muted);text-align:center}
+
+  /* Scroll reveal */
+  .reveal{opacity:0;transform:translateY(16px);transition:.6s ease}
+  .reveal.visible{opacity:1;transform:none}
+
+  /* Aurora ribbons */
+  .aurora{position:absolute;inset:0;pointer-events:none;mix-blend-mode:screen;opacity:.65}
+  .aurora .ribbon{position:absolute;inset:0;background:conic-gradient(from 180deg at 50% 50%, rgba(80,190,255,.08), rgba(150,255,210,.08), rgba(120,180,255,.08), rgba(120,200,255,.08));filter:blur(60px);animation:aurora 32s linear infinite}
+  @keyframes aurora{
+    0%{transform:translateY(0) rotate(0deg) scale(1)}
+    50%{transform:translateY(-10%) rotate(180deg) scale(1.05)}
+    100%{transform:translateY(0) rotate(360deg) scale(1)}
+  }
+
+  /* Inline code */
+  code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;background:rgba(255,255,255,.06);padding:.15rem .35rem;border-radius:6px}
+</style>
+</head>
+<body>
+<div id="space-wrap" aria-hidden="true">
+  <canvas id="parallax-1" class="layer"></canvas>
+  <canvas id="parallax-2" class="layer"></canvas>
+  <canvas id="parallax-3" class="layer"></canvas>
+  <div class="aurora"><div class="ribbon"></div></div>
+</div>
+
+<header class="hero">
+  <h1 class="title">Funder Decision Brief</h1>
+  <p class="subtitle">Planetary Restoration Archive · A transparent, nonpartisan, zero‑harm public‑goods initiative. This brief models risk/return for funders, cites the science, and shows how to flip the coordination game so positive cascades become the default outcome.</p>
+  <div class="cta-row">
+    <button class="btn glow" id="btn-read">Start the Brief ↓</button>
+    <button class="btn" id="btn-save">Save My Spot</button>
+    <button class="btn" id="btn-privacy">Privacy & Offline</button>
+  </div>
+</header>
+
+<section class="grid reveal" id="overview">
+  <aside class="card toc">
+    <div class="chip">Contents</div>
+    <a href="#exec">Executive Summary</a>
+    <a href="#science">Science of Giving & Coordination</a>
+    <a href="#math">Utility Model & Math</a>
+    <a href="#history">Historical Pattern Through Time</a>
+    <a href="#design">Design: Flip the Cascade</a>
+    <a href="#terms">Matched Pledge Term Sheet</a>
+    <a href="#kpis">KPIs & Verification</a>
+    <a href="#faq">FAQ & Risk Controls</a>
+    <a href="#iframe">Impact Amplifier</a>
+  </aside>
+
+  <div>
+    <div class="card reveal" id="exec">
+      <h2>Executive Summary</h2>
+      <p>
+        Funding the Archive is a classic public‑goods decision under uncertainty. Three frictions stall first moves:
+        (1) free‑riding and conditional cooperation, (2) impact opacity, (3) reputational/political risk. The same literature also shows clear remedies:
+        <em>visible anchors, matching, milestone‑based tranching, and neutral verification</em>. Together, they convert hesitation into positive spillovers.
+      </p>
+      <p>
+        Bottom line for early funders: the expected cascade is <strong>positive</strong> when commitments are (a) coordinated, (b) verifiable, and (c) framed non‑partisanly.
+        Benefits compound as reputational credit for “moving first” diffuses through networks, while risk is bounded by staged releases and auditable KPIs.
+      </p>
+    </div>
+
+    <details class="card reveal" id="science" open>
+      <summary>Science of Giving & Coordination</summary>
+      <div>
+        <p><span class="chip">Behavioral</span> Humans are <em>conditionally cooperative</em>: we contribute more when we observe others doing so. Visibility and early anchors lift participation; silence depresses it. Field experiments with matching and leadership gifts repeatedly increase both response rates and total raised.</p>
+        <p><span class="chip">Public‑goods dynamics</span> In repeated games, transparent signals (match ratios, countdowns, coalition logos) increase cooperation equilibria. Credible commitment devices (escrow, milestones) reduce strategic delay.</p>
+        <p><span class="chip">Warm‑glow & identity</span> Giving yields intrinsic utility (“warm‑glow”) and strengthens organizational identity and morale—especially when staff can witness verified progress.</p>
+      </div>
+    </details>
+
+    <details class="card reveal" id="math" open>
+      <summary>Utility Model & Math</summary>
+      <div>
+        <p>For a funder, expected utility can be framed as:</p>
+        <p><code>U = α·I·V + β·W − γ·R − δ·C</code></p>
+        <ul>
+          <li><strong>I</strong>: credible impact per dollar (program efficacy)</li>
+          <li><strong>V</strong>: visibility & verification (dashboards, audits, on‑chain proofs)</li>
+          <li><strong>W</strong>: warm‑glow & workforce morale effects</li>
+          <li><strong>R</strong>: reputational/political risk (bounded by neutrality, audits)</li>
+          <li><strong>C</strong>: coordination cost (fear of going first)</li>
+        </ul>
+        <p>Design levers raise <code>U</code> by increasing <code>I,V,W</code> and compressing <code>R,C</code>. With leadership matching and coalition disclosure, equilibrium giving shifts from a low‑cooperation fixed point to a high‑cooperation attractor.</p>
+        <div class="grid">
+          <div class="card"><strong>Sensitivity:</strong><br/>If a 1:1 match doubles perceived <code>V</code> and halves <code>C</code>, small anchors can move total participation by 30–80%+ in standard public‑goods response curves (illustrative; see FAQ).</div>
+          <div class="card"><strong>Risk bounding:</strong><br/>Stage‑gated tranches cap downside: at any milestone miss, remaining funds stay in escrow or are auto‑reallocated to pre‑agreed subprojects.</div>
+        </div>
+      </div>
+    </details>
+
+    <details class="card reveal" id="history" open>
+      <summary>Historical Pattern Through Time</summary>
+      <div>
+        <p>From 19th‑century library movements to modern open‑source foundations, visible anchor gifts + transparent accounting have repeatedly catalyzed outsized follow‑on support. In crises (pandemics, disasters), organizations with verifiable dashboards and neutral framing attracted broader coalitions faster and with fewer reputational entanglements.</p>
+        <p>Across decades, funders who moved early into credible public goods generally saw neutral‑to‑positive financial correlations and durable reputation gains—especially when measurement and reporting were strong.</p>
+      </div>
+    </details>
+
+    <details class="card reveal" id="design" open>
+      <summary>Design: Flip the Cascade (Playbook)</summary>
+      <div class="grid">
+        <div class="card">
+          <h3>1) Anchor & Match</h3>
+          <ul>
+            <li>Publish a 1:1 match with a finite cap and 60‑day window.</li>
+            <li>Display a live thermometer (verifiable, tamper‑evident).</li>
+            <li>Recognize early “movers” (opt‑in public credit).</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3>2) Coalition Reveal</h3>
+          <ul>
+            <li>Aggregate 5–10 logos for simultaneous reveal (no one is “first” alone).</li>
+            <li>Neutral language; nonpartisan charter and zero‑harm clause.</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3>3) Tranche & Verify</h3>
+          <ul>
+            <li>Funds released only on milestone acceptance.</li>
+            <li>Quarterly audit & public KPI ledger (on‑chain hash).</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3>4) Staff Engagement</h3>
+          <ul>
+            <li>Volunteer days + skills sprints linked to Archive tasks.</li>
+            <li>Warm‑glow and internal morale → stronger retention.</li>
+          </ul>
+        </div>
+      </div>
+    </details>
+
+    <details class="card reveal" id="terms" open>
+      <summary>Matched Pledge Term Sheet (Template)</summary>
+      <div>
+        <p><strong>Anchor:</strong> $X leadership gift, matched 1:1 up to $Y within 60 days.</p>
+        <p><strong>Escrow:</strong> Funds held by neutral custodian; tranche release at milestones M1…Mn.</p>
+        <p><strong>Governance:</strong> Nonpartisan charter; zero‑harm / anti‑inversion clause; public minutes.</p>
+        <p><strong>Reporting:</strong> Quarterly audit; KPI ledger with cryptographic proofs.</p>
+        <p><strong>Opt‑in Recognition:</strong> Public or anonymous, at funder’s discretion.</p>
+      </div>
+    </details>
+
+    <details class="card reveal" id="kpis" open>
+      <summary>KPIs & Verification</summary>
+      <div class="grid">
+        <div class="card">
+          <h3>Impact</h3>
+          <ul>
+            <li>Seeds planted / hectares restored</li>
+            <li>Households supported (food, shelter, energy)</li>
+            <li>Conflict‑mitigation actions logged</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3>Quality & Integrity</h3>
+          <ul>
+            <li>Independent audits & data provenance</li>
+            <li>On‑chain hashes of public reports</li>
+            <li>Tamper‑evident changelogs</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3>Engagement</h3>
+          <ul>
+            <li>Volunteer hours & skills matched</li>
+            <li>Open‑source contributions merged</li>
+            <li>Partner retention & expansion</li>
+          </ul>
+        </div>
+      </div>
+    </details>
+
+    <details class="card reveal" id="faq" open>
+      <summary>FAQ & Risk Controls</summary>
+      <div>
+        <p><strong>Q: Will funding cascade negatively against us?</strong><br/>
+        <em>A:</em> With neutral framing, matched anchors, staged releases, and third‑party verification, expected reputational and financial effects skew positive. Downside is bounded by escrow and milestones; upside compounds as visible leadership diffuses through networks.</p>
+        <p><strong>Q: Can we remain anonymous?</strong><br/>
+        Yes. Opt‑in recognition preserves internal warm‑glow while minimizing external signaling risk.</p>
+        <p><strong>Q: How do you ensure nonpartisanship?</strong><br/>
+        Governance charter, zero‑harm clause, and transparent minutes; data publication with provenance.</p>
+      </div>
+    </details>
+
+    <details class="card reveal" id="iframe" open>
+      <summary>Impact Amplifier (Randomized IFrame)</summary>
+      <div>
+        <p>This sandboxed panel rotates through persuasive micro‑pages generated at load‑time (no external calls). Each card presents a different lens—a KPI dashboard mock, a term‑sheet snippet, a “join the coalition” micro‑form, or a QR pledge placard. Reload to cycle content.</p>
+        <iframe id="impactFrame" title="Impact Amplifier" style="width:100%;height:420px;border:1px solid rgba(255,255,255,.12);border-radius:12px;background:rgba(255,255,255,.02)" sandbox="allow-scripts"></iframe>
+      </div>
+    </details>
+
+  </div>
+</section>
+
+<footer class="reveal">
+  <div>© Planetary Restoration Archive · Zero‑Harm · Nonpartisan · Tamper‑evident reporting</div>
+  <div class="muted" id="statusline">Status: Ready</div>
+</footer>
+
+<script>
+/* =========================================================
+   HYBRID SKY: Galactic Ledger + Aurora Continuum + Nexus
+   Three parallax canvases: stars (deep), nebulas (mid),
+   orbiting nodes/links (near). Lightweight & self-contained.
+   ========================================================= */
+const DPR = Math.min(2, window.devicePixelRatio || 1);
+const layers = [
+  {id:"parallax-1", speed:0.15}, // deep stars
+  {id:"parallax-2", speed:0.35}, // nebulas
+  {id:"parallax-3", speed:0.65}  // nexus nodes
+];
+function resizeCanvas(c){
+  const dpr = DPR;
+  const b = c.getBoundingClientRect();
+  c.width = Math.floor(b.width * dpr);
+  c.height = Math.floor(b.height * dpr);
+  const ctx = c.getContext('2d');
+  ctx.setTransform(dpr,0,0,dpr,0,0);
+  return ctx;
+}
+const sky = layers.map(L=>{
+  const c = document.getElementById(L.id);
+  const ctx = resizeCanvas(c);
+  return {...L, c, ctx, w: c.clientWidth, h: c.clientHeight};
+});
+window.addEventListener('resize', ()=> sky.forEach(L=>{resizeCanvas(L.c);L.w=L.c.clientWidth;L.h=L.c.clientHeight;}));
+
+// Random helper
+const R = (min,max)=>Math.random()*(max-min)+min;
+const RI = (min,max)=>Math.floor(R(min,max+1));
+
+// Layer 1: deep stars
+const stars = Array.from({length: 420}, ()=> ({
+  x:R(0,1), y:R(0,1), r:R(0.3,1.4), a:R(0.3,1),
+  tw:R(2,7), ph:R(0,Math.PI*2)
+}));
+
+// Layer 2: nebulas (soft radial clouds)
+const nebulas = Array.from({length: 6}, ()=> ({
+  x:R(-.2,1.2), y:R(-.2,1.2), s:R(300,620), hue:RI(180,220), a:R(0.05,0.12)
+}));
+
+// Layer 3: nexus nodes with links
+const nodes = Array.from({length: 26}, (_,i)=> ({
+  x:R(0.05,0.95), y:R(0.1,0.9), r:R(2,4), vx:R(-0.02,0.02), vy:R(-0.02,0.02)
+}));
+
+let t = 0, mx=0, my=0;
+window.addEventListener('mousemove', e=>{ mx = e.clientX/window.innerWidth; my = e.clientY/window.innerHeight; });
+
+function render(){
+  t += 0.016;
+  // Deep stars
+  (function(){
+    const L = sky[0], {ctx} = L, W=L.c.width/DPR, H=L.c.height/DPR;
+    ctx.clearRect(0,0,W,H);
+    for(const s of stars){
+      const px = (s.x + (mx-0.5)*.04) * W;
+      const py = (s.y + (my-0.5)*.04) * H;
+      const tw = (Math.sin(t*s.tw + s.ph)*0.5+0.5)*s.a;
+      ctx.globalAlpha = Math.max(0, Math.min(1, tw));
+      ctx.beginPath(); ctx.arc(px,py,s.r,0,Math.PI*2);
+      ctx.fillStyle = "#e6f1ff"; ctx.fill();
+    }
+    ctx.globalAlpha = 1;
+  })();
+  // Nebulas
+  (function(){
+    const L = sky[1], {ctx} = L, W=L.c.width/DPR, H=L.c.height/DPR;
+    ctx.clearRect(0,0,W,H);
+    for(const n of nebulas){
+      const px = (n.x + (mx-0.5)*.06) * W;
+      const py = (n.y + (my-0.5)*.06) * H;
+      const grad = ctx.createRadialGradient(px,py, n.s*0.1, px,py, n.s);
+      grad.addColorStop(0, `hsla(${n.hue},90%,70%,${n.a})`);
+      grad.addColorStop(1, `hsla(${n.hue},90%,50%,0)`);
+      ctx.fillStyle = grad;
+      ctx.beginPath(); ctx.arc(px,py,n.s,0,Math.PI*2); ctx.fill();
+    }
+  })();
+  // Nexus
+  (function(){
+    const L = sky[2], {ctx} = L, W=L.c.width/DPR, H=L.c.height/DPR;
+    ctx.clearRect(0,0,W,H);
+    // Links
+    ctx.strokeStyle = "rgba(136,224,255,0.16)";
+    for(let i=0;i<nodes.length;i++){
+      for(let j=i+1;j<nodes.length;j++){
+        const a = nodes[i], b = nodes[j];
+        const dx = (a.x-b.x)*W, dy=(a.y-b.y)*H;
+        const d = Math.hypot(dx,dy);
+        if(d < 180){
+          ctx.globalAlpha = 1 - d/180;
+          ctx.beginPath(); ctx.moveTo(a.x*W, a.y*H); ctx.lineTo(b.x*W, b.y*H); ctx.stroke();
+        }
+      }
+    }
+    ctx.globalAlpha = 1;
+    // Nodes
+    for(const n of nodes){
+      n.x += n.vx*0.2; n.y += n.vy*0.2;
+      if(n.x<0||n.x>1) n.vx*=-1;
+      if(n.y<0||n.y>1) n.vy*=-1;
+      const px = (n.x + (mx-0.5)*.08) * W;
+      const py = (n.y + (my-0.5)*.08) * H;
+      ctx.beginPath(); ctx.arc(px,py,n.r,0,Math.PI*2);
+      ctx.fillStyle = "rgba(94,241,161,0.9)"; ctx.fill();
+      ctx.beginPath(); ctx.arc(px,py,n.r+3,0,Math.PI*2);
+      ctx.strokeStyle = "rgba(94,241,161,0.18)"; ctx.stroke();
+    }
+  })();
+  requestAnimationFrame(render);
+}
+render();
+
+// Parallax scroll offset
+function parallax(){
+  const y = window.scrollY || 0;
+  sky.forEach((L,i)=>{
+    const ty = -y * L.speed;
+    L.c.style.transform = `translateY(${ty}px)`;
+  });
+}
+window.addEventListener('scroll', parallax); parallax();
+
+// Reveal on scroll
+const observer = new IntersectionObserver((entries)=>{
+  for(const e of entries){
+    if(e.isIntersecting) e.target.classList.add('visible');
+  }
+},{threshold:0.12});
+document.querySelectorAll('.reveal').forEach(el=>observer.observe(el));
+
+// CTA buttons
+document.getElementById('btn-read').addEventListener('click',()=>{
+  document.getElementById('overview').scrollIntoView({behavior:'smooth',block:'start'});
+});
+
+// IndexedDB (optional): save scroll + prefs
+const DB = {
+  name:'pra_funder', store:'kv',
+  async init(){
+    return new Promise((resolve,reject)=>{
+      const open = indexedDB.open(DB.name,1);
+      open.onupgradeneeded = ()=>{
+        const db = open.result;
+        if(!db.objectStoreNames.contains(DB.store)){
+          db.createObjectStore(DB.store);
+        }
+      };
+      open.onsuccess = ()=>resolve(open.result);
+      open.onerror = ()=>reject(open.error);
+    });
+  },
+  async set(key,val){
+    try{
+      const db = await DB.init();
+      const tx = db.transaction(DB.store,'readwrite');
+      tx.objectStore(DB.store).put(val,key);
+      return tx.complete;
+    }catch(e){/* ignore */}
+  },
+  async get(key){
+    try{
+      const db = await DB.init();
+      const tx = db.transaction(DB.store,'readonly');
+      return new Promise(res=>{
+        const req = tx.objectStore(DB.store).get(key);
+        req.onsuccess = ()=>res(req.result);
+        req.onerror = ()=>res(undefined);
+      });
+    }catch(e){ return undefined; }
+  }
+};
+(async()=>{
+  const saved = await DB.get('scrollY');
+  if(typeof saved==='number'){ window.scrollTo(0,saved); }
+  window.addEventListener('beforeunload', ()=>DB.set('scrollY', window.scrollY||0));
+})();
+
+document.getElementById('btn-save').addEventListener('click', async()=>{
+  await DB.set('savedAt', Date.now());
+  const el = document.getElementById('statusline');
+  el.textContent = 'Status: Spot saved locally ✔';
+  el.style.color = 'var(--glow)';
+  setTimeout(()=>{el.style.color='';}, 3000);
+});
+
+document.getElementById('btn-privacy').addEventListener('click', ()=>{
+  alert('This page is self-contained. No external requests. IndexedDB stores only scroll position and local button actions, on your device.');
+});
+
+/* ============================================
+   Randomized Impact Amplifier (iframe srcdoc)
+   ============================================ */
+function randomFrame(){
+  const pages = [
+    {
+      name:'Thermometer',
+      html:`
+        <style>body{margin:0;font:14px system-ui;background:#081019;color:#dff}
+        .wrap{padding:16px}
+        h3{margin:0 0 8px}
+        .bar{height:22px;background:#123;border-radius:99px;overflow:hidden;border:1px solid #2a3b55}
+        .fill{height:100%;width:${Math.floor(Math.random()*70+20)}%;background:linear-gradient(90deg,#5ef1a1,#88e0ff)}
+        .row{display:flex;justify-content:space-between;color:#8fb}
+        .small{color:#9ab}
+        </style>
+        <div class="wrap">
+          <h3>Coalition Match Progress</h3>
+          <div class="bar"><div class="fill"></div></div>
+          <div class="row"><div>Goal: $1,000,000</div><div>Window: 60 days</div></div>
+          <p class="small">Escrowed & tranche‑released on milestones. Transparent ledger hashes posted publicly.</p>
+        </div>
+      `
+    },
+    {
+      name:'Pledge',
+      html:`
+        <style>body{margin:0;font:14px system-ui;background:#0b111a;color:#eaf}
+        .wrap{padding:16px}
+        label{display:block;margin:8px 0 4px;color:#bcd}
+        input,select,button{width:100%;padding:8px;border-radius:10px;border:1px solid #2b3e5c;background:#0f1a28;color:#eaf}
+        button{margin-top:10px;border-color:#5ef1a1}
+        .muted{color:#98a7bb;font-size:12px}
+        </style>
+        <div class="wrap">
+          <h3>Join the First‑Mover Coalition</h3>
+          <label>Organization</label><input placeholder="Org name (kept private if you prefer)"/>
+          <label>Anchor Amount</label><input type="number" placeholder="e.g., 250000"/>
+          <label>Recognition</label><select><option>Public</option><option>Anonymous</option></select>
+          <button onclick="this.textContent='Saved (locally) ✔';">Prepare Conditional Pledge</button>
+          <p class="muted">This mock stores nothing off‑device. Real pledges are staged in escrow with milestone gates.</p>
+        </div>
+      `
+    },
+    {
+      name:'KPI Card',
+      html:`
+        <style>body{margin:0;font:14px system-ui;background:#081019;color:#dff}
+        .wrap{padding:16px}
+        .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px}
+        .card{border:1px solid #28415e;border-radius:10px;padding:10px;background:#0b1521}
+        .big{font-size:22px;font-weight:800}
+        .small{color:#9ab}
+        </style>
+        <div class="wrap">
+          <h3>Quarterly KPIs (Preview)</h3>
+          <div class="grid">
+            <div class="card"><div class="big">${Math.floor(Math.random()*50000+5000)}</div><div class="small">Seeds Planted</div></div>
+            <div class="card"><div class="big">${Math.floor(Math.random()*1200+120)}</div><div class="small">Hectares Restored</div></div>
+            <div class="card"><div class="big">${Math.floor(Math.random()*800+60)}</div><div class="small">Households Supported</div></div>
+            <div class="card"><div class="big">${Math.floor(Math.random()*40+5)}</div><div class="small">Conflict‑mitigation Actions</div></div>
+          </div>
+        </div>
+      `
+    },
+    {
+      name:'QR Pledge',
+      html:`
+        <style>body{margin:0;font:14px system-ui;background:#060b10;color:#dff;display:grid;place-items:center;height:100vh}
+        .card{border:1px solid #2b3e5c;border-radius:12px;padding:14px;background:#0a121c;width:92%;max-width:480px;text-align:center}
+        .muted{color:#9ab;font-size:12px}
+        .qr{display:block;margin:10px auto;width:180px;height:180px;background:
+          conic-gradient(#5ef1a1 0 25%, #88e0ff 0 50%, #5ef1a1 0 75%, #88e0ff 0 100%);
+          -webkit-mask:radial-gradient(circle, #0000 58%, #000 59%)}
+        </style>
+        <div class="card">
+          <h3>Signal Interest</h3>
+          <div class="qr"></div>
+          <div class="muted">Scan to open the coalition interest form (demo). In production, this routes to a neutral escrow with milestone gates.</div>
+        </div>
+      `
+    }
+  ];
+  const pick = pages[Math.floor(Math.random()*pages.length)];
+  const iframe = document.getElementById('impactFrame');
+  iframe.srcdoc = pick.html;
+}
+randomFrame();
+
+</script>
+</body>
+</html>

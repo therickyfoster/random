@@ -1,0 +1,26 @@
+{
+  "feeds": {
+    "gaza_israel_lebanon": [
+      "https://www.icrc.org/en/rss.xml",
+      "https://www.un.org/press/en/rss.xml",
+      "https://reliefweb.int/updates/rss.xml"
+    ],
+    "ukraine": [
+      "https://www.osce.org/ukraine/rss",
+      "https://reliefweb.int/updates/rss.xml?search=ukraine",
+      "https://news.un.org/feed/subscribe/en/news/topic/peace-and-security/feed/rss.xml"
+    ],
+    "sudan": [
+      "https://reliefweb.int/updates/rss.xml?search=sudan",
+      "https://www.unocha.org/tags/sudan/rss.xml"
+    ],
+    "myanmar": [
+      "https://reliefweb.int/updates/rss.xml?search=myanmar",
+      "https://www.crisisgroup.org/feeds/index.rss"
+    ],
+    "global": [
+      "https://news.un.org/feed/subscribe/en/news/all/rss.xml",
+      "https://www.crisisgroup.org/feeds/index.rss"
+    ]
+  }
+}

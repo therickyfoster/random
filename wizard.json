@@ -1,0 +1,27 @@
+{
+  "version": "1.0.0",
+  "spawn": { "min_ms": 35000, "max_ms": 75000, "flight_s_min": 6, "flight_s_max": 9, "start_top_vh_min": 10, "start_top_vh_max": 70 },
+  "sprite": { "emoji": "🧙‍♂️", "size_px": 64 },
+  "texts": {
+    "title": "Support the Planetary Restoration Archive",
+    "subtitle": "Guardian: Foster + Navi — verifiable, zero-harm restoration",
+    "etransfer_label": "Interac e-Transfer",
+    "btc_label": "Bitcoin (BTC)",
+    "xmr_label": "Monero (XMR)",
+    "notes_title": "Notes",
+    "notes_body": "Your support seeds orchards, peace tooling, and zero-harm tech. Thank you. 🌱",
+    "copy": "Copy",
+    "copied": "Copied!",
+    "close": "Close"
+  },
+  "donations": {
+    "etransfer_email": "therickyfoster@gmail.com",
+    "btc": "bc1q6fyvqxm7jryy5edckk9nuu6mgyjlz4nnp8nksr",
+    "xmr": "47LcEP5RYbVMCMXNURuRjq8qHJNeF2aZ339Bp45MYhmMES5Cc61jMZa59BBdY137EyJMqLfQFBvesV6jLjyCFsBVQYftWde",
+    "help_url": "https://planetaryrestorationarchive.com/crypto/xmr"
+  },
+  "ui": { "theme": "dark-parchment", "confetti_count": 90 },
+  "integrity": {
+    "expected_sha256_hex": "<optional_precomputed_hash_of_this_json_or_empty_string>"
+  }
+}
